@@ -1,38 +1,58 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded');
 
-    const slides = document.querySelectorAll('.slide');
     const logoContainer = document.querySelector('.logo-container');
     const navContainer = document.querySelector('.nav-container');
 
-    console.log('Found slides:', slides.length);
-    console.log('Logo container:', !!logoContainer);
-    console.log('Nav container:', !!navContainer);
-
-    if (slides.length === 0) {
-        console.error('No slides found!');
-        return;
-    }
-
+    let slides;
     let currentSlide = 0;
     const slideInterval = 6000; // 6 seconds
 
+    // Function to load appropriate images based on screen size
+    function loadResponsiveImages() {
+        const isMobile = window.innerWidth <= 768;
+
+        if (isMobile) {
+            // Load mobile images
+            slides = document.querySelectorAll('.mobile-slide');
+            slides.forEach(slide => {
+                const mobileImg = slide.getAttribute('data-mobile');
+                slide.style.backgroundImage = `url('${mobileImg}')`;
+            });
+        } else {
+            // Load desktop images
+            slides = document.querySelectorAll('.desktop-slide');
+            slides.forEach(slide => {
+                const desktopImg = slide.getAttribute('data-desktop');
+                slide.style.backgroundImage = `url('${desktopImg}')`;
+            });
+        }
+
+        console.log('Loaded', slides.length, isMobile ? 'mobile' : 'desktop', 'slides');
+
+        // Reset slideshow
+        resetSlideshow();
+    }
+
     // Specify which images should use black (true) or white (false) logo
-    const useBlackLogo = [
+    // Desktop images logo settings
+    const desktopLogoSettings = [
         false, // 01. MYANMAR.jpg - WHITE logo
-        true,  // 02. ICELAND.jpg - BLACK logo
-        true,  // 03. INDIA.jpg - BLACK logo
-        true,  // 04. MONGOLIA.jpg - BLACK logo
-        true,  // 05. NEW ZEALAND.jpg - BLACK logo
-        true,  // 06. BRAZIL.jpg - BLACK logo
-        true,  // 07. JAPAN.jpg - BLACK logo
-        false, // 08. TIBET.jpg - WHITE logo
-        true,  // 09. USA.jpg - BLACK logo
-        true,  // 10. USA.jpg - BLACK logo
-        false, // 11. ATHENS.jpg - WHITE logo
-        true,  // 12. USA_.jpg - BLACK logo
-        false, // ABOUT.jpg - WHITE logo
-        true,  // CONTACT.jpg - BLACK logo
+        true,  // 02. BRAZIL.jpg - BLACK logo
+        false, // 03. TIBET.jpg - WHITE logo
+        true,  // 04. USA.jpg - BLACK logo
+        true,  // 05. USA.jpg - BLACK logo
+        false,  // 06. USA_.jpg - BLACK logo
+    ];
+
+    // Mobile images logo settings
+    const mobileLogoSettings = [
+        true,  // 01. ICELAND.jpg - BLACK logo
+        true, // 02. ABOUT_01.jpg - WHITE logo
+        true,  // 03. MONGOLIA.jpg - BLACK logo
+        false,  // 05. BAHARIYA.jpg - BLACK logo
+        true,  // 06. EGYPT.jpg - BLACK logo
+        false, // 07. ATHENS.jpg - WHITE logo
     ];
 
     function updateLogo() {
@@ -44,7 +64,10 @@ document.addEventListener('DOMContentLoaded', function() {
         logoContainer.classList.remove('bright-background', 'dark-background');
         navContainer.classList.remove('bright-background', 'dark-background');
 
-        if (useBlackLogo[currentSlide]) {
+        const isMobile = window.innerWidth <= 768;
+        const logoSettings = isMobile ? mobileLogoSettings : desktopLogoSettings;
+
+        if (logoSettings[currentSlide]) {
             logoContainer.classList.add('bright-background');
             navContainer.classList.add('bright-background');
             console.log('Set to bright background (black logo)');
@@ -56,6 +79,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showNextSlide() {
+        if (!slides || slides.length === 0) return;
+
         console.log('Changing slide from', currentSlide, 'to', (currentSlide + 1) % slides.length);
 
         // Remove active class from current slide
@@ -71,16 +96,47 @@ document.addEventListener('DOMContentLoaded', function() {
         updateLogo();
     }
 
-    // Make sure first slide is active
-    slides[0].classList.add('active');
-    console.log('First slide activated');
+    function resetSlideshow() {
+        // Remove all active classes
+        document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
 
-    // Initialize logo for first slide
-    updateLogo();
+        // Reset to first slide
+        currentSlide = 0;
+        if (slides && slides.length > 0) {
+            slides[0].classList.add('active');
+            updateLogo();
+        }
+    }
 
-    // Start the slideshow
-    const intervalId = setInterval(showNextSlide, slideInterval);
-    console.log('Slideshow started with interval:', intervalId);
+    let intervalId;
+
+    function startSlideshow() {
+        if (intervalId) clearInterval(intervalId);
+        intervalId = setInterval(showNextSlide, slideInterval);
+        console.log('Slideshow started with interval:', intervalId);
+    }
+
+    // Initialize on load
+    loadResponsiveImages();
+    startSlideshow();
+
+    // Reload images on window resize (debounced)
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            const newWidth = window.innerWidth;
+            const wasMobile = slides && slides[0] && slides[0].classList.contains('mobile-slide');
+            const nowMobile = newWidth <= 768;
+
+            // Only reload if we crossed the mobile/desktop threshold
+            if (wasMobile !== nowMobile) {
+                console.log('Screen size changed, reloading images');
+                loadResponsiveImages();
+                startSlideshow();
+            }
+        }, 250);
+    });
 
     // Enhanced content section handling with smooth animations
     const contentSections = document.querySelectorAll('.content-section');

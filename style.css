@@ -37,12 +37,20 @@ body, html {
     opacity: 1;
 }
 
+/* Show desktop images by default, hide mobile */
+.desktop-slide {
+    display: block;
+}
+.mobile-slide {
+    display: none;
+}
+
 .logo-container {
     position: fixed;
     top: 80px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 100;
+    z-index: 1100; /* Above content sections */
     width: 80px;
     height: 32px;
 }
@@ -66,7 +74,7 @@ body, html {
     top: 200px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 100;
+    z-index: 1100; /* Above content sections */
     display: flex;
     align-items: center;
     gap: 15px;
@@ -102,7 +110,7 @@ body, html {
     display: none;
     z-index: 1000;
     text-align: left;
-    pointer-events: none; /* Allow clicks to pass through transparent areas */
+    pointer-events: auto; /* Allow clicks everywhere on the overlay */
 }
 
 .content-section.show,
@@ -156,7 +164,7 @@ body, html {
         black var(--fadeSize),
         black 100%
     );
-    pointer-events: auto; /* Re-enable clicks on content area */
+    pointer-events: auto;
 }
 
 .content-section.show .scrollable-area {
@@ -276,8 +284,7 @@ body, html {
     margin-bottom: 0;
 }
 
-/* CONTACT: stylize email link */
-
+/* CONTACT: stylize email link and heading */
 #contact .scrollable-content h1 {
     font-size: 3.5rem;
 }
@@ -347,6 +354,14 @@ body, html {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+    /* On mobile: hide desktop, show mobile */
+    .desktop-slide {
+        display: none;
+    }
+    .mobile-slide {
+        display: block;
+    }
+
     .logo-container {
         top: 20px;
         width: 100px;
@@ -364,7 +379,8 @@ body, html {
         padding: 40px 20px 0px;
     }
     .content-section h1,
-    #about .scrollable-content h1 {
+    #about .scrollable-content h1,
+    #contact .scrollable-content h1 {
         font-size: 2.5rem;
     }
     .content-section h2,
@@ -384,33 +400,52 @@ body, html {
 }
 
 @media (max-width: 480px) {
-    .logo-container {
-        top: 15px;
-        width: 80px;
-        height: 32px;
-    }
-    .nav-container {
-        top: 70px;
-        gap: 10px;
-    }
-    .menu-item {
-        font-size: 14px;
-    }
-    .scrollable-area {
-        height: calc(100vh - 150px);
-        padding: 30px 15px 0px;
-    }
-    .content-section h1,
-    #about .scrollable-content h1 {
-        font-size: 2rem;
-    }
-    .content-section h2,
-    #about .scrollable-content h2 {
-        font-size: 1.4rem;
-    }
-    #about .scrollable-content {
-        padding-bottom: 60px;
-    }
+  .logo-container {
+    top: 15px !important;
+    width: 80px;
+    height: 32px;
+  }
+
+  .nav-container {
+    top: 135px !important;
+    gap: 10px;
+  }
+
+  .menu-item {
+    font-size: 18px;
+  }
+
+  .scrollable-area {
+    height: calc(100vh - 150px);
+    padding: 30px 15px 0px;
+  }
+
+  .content-section h1,
+  #about .scrollable-content h1,
+  #contact .scrollable-content h1 {
+    font-size: 2rem;
+  }
+
+  .content-section h2,
+  #about .scrollable-content h2 {
+    font-size: 1.4rem;
+  }
+
+  #about .scrollable-content {
+    padding-bottom: 60px;
+  }
+
+  .content-section p,
+  #about .scrollable-content p,
+  #contact .scrollable-content p,
+  #contact .scrollable-content a {
+    font-size: 1.15rem;
+  }
+
+  .copy-btn {
+    font-size: 1rem;
+    padding: 0;
+  }
 }
 
 /* Hide scrollbars */
