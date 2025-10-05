@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
         false, // 03. TIBET.jpg - WHITE logo
         true,  // 04. USA.jpg - BLACK logo
         true,  // 05. USA.jpg - BLACK logo
-        false,  // 06. USA_.jpg - BLACK logo
+        true,  // 06. USA_.jpg - BLACK logo
     ];
 
     // Mobile images logo settings
