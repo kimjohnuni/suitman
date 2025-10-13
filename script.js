@@ -43,8 +43,8 @@ document.addEventListener('DOMContentLoaded', function() {
         true,  // 04. USA.jpg - BLACK logo
         true,  // 05. USA.jpg - BLACK logo
         true,  // 06. USA_.jpg - BLACK logo
-        false,  // 07. BEIJING.jpg - WHITE logo
-        false,  // 08. BUSAN.jpg - WHITE logo
+        false, // 07. BEIJING.jpg - WHITE logo
+        false, // 08. BUSAN.jpg - WHITE logo
         true,  // 09. FIGURES.jpg - BLACK logo
         true,  // 10. GREECE.jpg - BLACK logo
         false,  //11. HK.jpg - WHITE logo
@@ -213,11 +213,11 @@ document.addEventListener('DOMContentLoaded', function() {
     function hideContentSection(section) {
         section.classList.remove('show');
         section.classList.add('hide');
+        currentOpenSection = null; // FIXED: Set to null immediately instead of after timeout
         // Fade-out duration: must match CSS animation (800ms to match fade-in)
         setTimeout(() => {
             section.style.display = 'none';
             section.classList.remove('hide', 'crossfade');
-            currentOpenSection = null;
         }, 800);
     }
 
