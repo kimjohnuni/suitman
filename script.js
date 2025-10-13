@@ -115,12 +115,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const contentSections = document.querySelectorAll('.content-section');
     let currentOpenSection = null;
 
-    // FIX: Listen on menu links directly, not document
     const menuLinks = document.querySelectorAll('.menu-item a');
     menuLinks.forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
-            e.stopPropagation(); // Prevent bubbling to content-section
+            e.stopPropagation();
 
             const href = this.getAttribute('href');
             if (href === '#about') {
@@ -179,24 +178,27 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 800);
     }
 
+    // FIX: Only close on direct clicks on scrollable-area, not on background
     contentSections.forEach(section => {
-        section.addEventListener('click', function(e) {
-            // FIX: Check if click is on the menu link and ignore
-            if (e.target.closest('.menu-item')) {
-                return;
-            }
-
-            if (
-                e.target.id === 'emailLink' ||
-                e.target.id === 'copyBtn' ||
-                e.target.closest('#copyBtn') ||
-                e.target.closest('#emailLink')
-            ) {
-                return;
-            }
-            hideContentSection(section);
-            console.log('Content section closed with animation');
-        });
+        const scrollableArea = section.querySelector('.scrollable-area');
+        if (scrollableArea) {
+            scrollableArea.addEventListener('click', function(e) {
+                // Only close if clicking directly on the scrollable area background
+                // Not on any child elements
+                if (e.target === scrollableArea || e.target === scrollableArea.querySelector('.scrollable-content')) {
+                    if (
+                        e.target.id === 'emailLink' ||
+                        e.target.id === 'copyBtn' ||
+                        e.target.closest('#copyBtn') ||
+                        e.target.closest('#emailLink')
+                    ) {
+                        return;
+                    }
+                    hideContentSection(section);
+                    console.log('Content section closed with animation');
+                }
+            });
+        }
     });
 
     const copyBtn = document.getElementById('copyBtn');
@@ -218,11 +220,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const slideshowContainer = document.querySelector('.slideshow-container');
 
+    // FIX: Don't let slideshow clicks interfere when content section is open
     slideshowContainer.addEventListener('click', function(e) {
+        // If any content section is showing, don't handle slideshow navigation
+        if (document.querySelector('.content-section.show')) {
+            return;
+        }
+
         const ignoreSelectors = [
             '.logo-container',
-            '.nav-container',
-            '.content-section.show'
+            '.nav-container'
         ];
         for (const selector of ignoreSelectors) {
             const el = document.querySelector(selector);
