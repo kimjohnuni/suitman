@@ -227,7 +227,7 @@ html, body {
 .content-section h1 {
     font-family: 'Roboto Condensed', Arial, sans-serif;
     font-size: 3rem;
-    margin-bottom: 30px;
+    margin-bottom: 0px;
     color: white;
 }
 .content-section h2 {
@@ -241,7 +241,7 @@ html, body {
     margin-bottom: 20px;
     color: rgba(255, 255, 255, 0.9);
 }
-#about .scrollable-content { padding-bottom: 100px; }
+#about .scrollable-content { padding-bottom: 150px; }
 #about .scrollable-content h1 { font-size: 3.5rem; }
 #about .scrollable-content h2 { font-size: 2.5rem; }
 #about .scrollable-content p {
@@ -306,10 +306,41 @@ html, body {
     .logo-container { top: 20px; width: 100px; height: 40px; }
     .nav-container { top: 85px; gap: 12px; }
     .menu-item { font-size: 16px; }
+
     .scrollable-area {
-        height: calc(100vh - 200px);
-        padding: 40px 20px 0px;
+        position: absolute;
+        top: 120px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: auto;
+        padding: 15px 20px 0px;
+        overflow-y: auto;
+        background: linear-gradient(
+            to top,
+            rgba(0, 0, 0, 1) 0%,
+            rgba(0, 0, 0, 0.95) 20%,
+            rgba(0, 0, 0, 0.8) 40%,
+            rgba(0, 0, 0, 0.6) 60%,
+            rgba(0, 0, 0, 0.4) 80%,
+            rgba(0, 0, 0, 0) 100%
+        );
+        --fadeSize: 54px;
+        -webkit-mask-image: linear-gradient(
+            to bottom,
+            transparent 0px,
+            black var(--fadeSize),
+            black 100%
+        );
+        mask-image: linear-gradient(
+            to bottom,
+            transparent 0px,
+            black var(--fadeSize),
+            black 100%
+        );
+        pointer-events: auto;
     }
+
     .content-section h1,
     #about .scrollable-content h1,
     #contact .scrollable-content h1 { font-size: 2.5rem; }
@@ -326,22 +357,80 @@ html, body {
     .logo-container { top: 15px !important; width: 80px; height: 32px; }
     .nav-container { top: 135px !important; gap: 10px; }
     .menu-item { font-size: 18px; }
+
     .scrollable-area {
-        height: calc(100vh - 150px);
-        padding: 30px 15px 0px;
+        position: absolute;
+        top: 165px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: auto;
+        padding: 10px 15px 0px;
+        overflow-y: auto;
+        background: linear-gradient(
+            to top,
+            rgba(0, 0, 0, 1) 0%,
+            rgba(0, 0, 0, 0.95) 20%,
+            rgba(0, 0, 0, 0.8) 40%,
+            rgba(0, 0, 0, 0.6) 60%,
+            rgba(0, 0, 0, 0.4) 80%,
+            rgba(0, 0, 0, 0) 100%
+        );
+        --fadeSize: 54px;
+        -webkit-mask-image: linear-gradient(
+            to bottom,
+            transparent 0px,
+            black var(--fadeSize),
+            black 100%
+        );
+        mask-image: linear-gradient(
+            to bottom,
+            transparent 0px,
+            black var(--fadeSize),
+            black 100%
+        );
+        pointer-events: auto;
     }
+
     .content-section h1,
     #about .scrollable-content h1,
     #contact .scrollable-content h1 { font-size: 2rem; }
     .content-section h2,
     #about .scrollable-content h2 { font-size: 1.4rem; }
-    #about .scrollable-content { padding-bottom: 60px; }
+    #about .scrollable-content { padding-bottom: 220px; }
     .content-section p,
     #about .scrollable-content p,
     #contact .scrollable-content p,
     #contact .scrollable-content a { font-size: 1.15rem; }
     .copy-btn { font-size: 1rem; padding: 0; }
+
+
+    .content-section .scrollable-area {
+        height: calc(100vh - 160px);
+      }
+
+      .content-section h1 {
+          margin-bottom: 0px;
+      }
 }
+
+
+
+
+/* Make sure base html/body don’t have extra margin/padding */
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100%;
+    width: 100%;
+}
+
+
+
+
+
+
+
 
 /* Hide scrollbars */
 body::-webkit-scrollbar { display: none; }
