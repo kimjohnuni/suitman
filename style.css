@@ -366,7 +366,7 @@ html, body {
         left: 0;
         right: 0;
         bottom: 0;
-        height: calc(100vh - 160px);
+        height: auto;
         padding: 10px 15px 0px;
         overflow-y: auto;
         background: linear-gradient(
@@ -396,6 +396,10 @@ html, body {
         animation: fadeInGradient 0.8s cubic-bezier(0.25,0.46,0.45,0.94) forwards;
     }
 
+    .content-section .scrollable-area {
+        height: calc(100vh - 160px);
+    }
+
     .content-section h1,
     #about .scrollable-content h1,
     #contact .scrollable-content h1 {
@@ -411,6 +415,7 @@ html, body {
     #contact .scrollable-content a { font-size: 1.15rem; }
     .copy-btn { font-size: 1rem; padding: 0; }
 }
+
 
 
 
