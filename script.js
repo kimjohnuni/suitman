@@ -139,7 +139,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const section = document.getElementById(sectionId);
         if (!section) return;
 
-        if (currentOpenSection === section) return;
+        // FIX: Check if section is currently visible, not just if it's the tracked section
+        if (currentOpenSection === section && section.classList.contains('show')) {
+            return;
+        }
 
         if (currentOpenSection && currentOpenSection !== section) {
             crossfadeToSection(currentOpenSection, section);
@@ -177,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             section.style.display = 'none';
             section.classList.remove('hide', 'crossfade');
-            currentOpenSection = null;
+            currentOpenSection = null;  // Clear the tracked section
         }, 800);
     }
 
