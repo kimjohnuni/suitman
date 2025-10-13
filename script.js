@@ -6,9 +6,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let slides;
     let currentSlide = 0;
-    const slideInterval = 6000; // 6 seconds
+    const slideInterval = 6000;
 
-    // Function to load appropriate images based on screen size
     function loadResponsiveImages() {
         const isMobile = window.innerWidth <= 768;
 
@@ -27,12 +26,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         console.log('Loaded', slides.length, isMobile ? 'mobile' : 'desktop', 'slides');
-
-        // Reset slideshow
         resetSlideshow();
     }
 
-    // Logo settings arrays
     const desktopLogoSettings = [
         false, true, false, true, true, true, false, false, true, true, false,
     ];
@@ -97,11 +93,9 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Slideshow started with interval:', intervalId);
     }
 
-    // Initialize slideshow
     loadResponsiveImages();
     startSlideshow();
 
-    // Responsive image reload on window resize (debounced)
     let resizeTimer;
     window.addEventListener('resize', function() {
         clearTimeout(resizeTimer);
@@ -118,28 +112,29 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 250);
     });
 
-    // Enhanced content section handling with smooth animations
     const contentSections = document.querySelectorAll('.content-section');
     let currentOpenSection = null;
 
-    document.addEventListener('click', function(e) {
-        const href = e.target.getAttribute('href');
+    // FIX: Listen on menu links directly, not document
+    const menuLinks = document.querySelectorAll('.menu-item a');
+    menuLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation(); // Prevent bubbling to content-section
 
-        if (href === '#about') {
-            e.preventDefault();
-            showContentSection('about');
-        }
-        if (href === '#contact') {
-            e.preventDefault();
-            showContentSection('contact');
-        }
+            const href = this.getAttribute('href');
+            if (href === '#about') {
+                showContentSection('about');
+            } else if (href === '#contact') {
+                showContentSection('contact');
+            }
+        });
     });
 
     function showContentSection(sectionId) {
         const section = document.getElementById(sectionId);
         if (!section) return;
 
-        // FIX: Check if section is currently visible, not just if it's the tracked section
         if (currentOpenSection === section && section.classList.contains('show')) {
             return;
         }
@@ -180,12 +175,17 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             section.style.display = 'none';
             section.classList.remove('hide', 'crossfade');
-            currentOpenSection = null;  // Clear the tracked section
+            currentOpenSection = null;
         }, 800);
     }
 
     contentSections.forEach(section => {
         section.addEventListener('click', function(e) {
+            // FIX: Check if click is on the menu link and ignore
+            if (e.target.closest('.menu-item')) {
+                return;
+            }
+
             if (
                 e.target.id === 'emailLink' ||
                 e.target.id === 'copyBtn' ||
@@ -216,12 +216,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // --- Slideshow manual navigation and cursor arrows ---
     const slideshowContainer = document.querySelector('.slideshow-container');
 
-    // Manual navigation: click left/right half for previous/next
     slideshowContainer.addEventListener('click', function(e) {
-        // Prevent manual navigation on overlays/menus/logos
         const ignoreSelectors = [
             '.logo-container',
             '.nav-container',
@@ -242,7 +239,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Cursor logic: left/right arrow
     slideshowContainer.addEventListener('mousemove', function(e) {
         const width = window.innerWidth;
         if (e.clientX < width / 2) {
