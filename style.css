@@ -358,7 +358,7 @@ html, body {
 
 
     .test {
-    color: yellow;  /* CHANGE THIS COLOR */
+    color: blue;  /* CHANGE THIS COLOR */
     text-decoration: none;
     transition: color 2s ease-in-out;
     display: block;
