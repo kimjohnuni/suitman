@@ -107,92 +107,124 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 250);
     });
 
-    // Content section handling - SIMPLIFIED APPROACH
-    const contentSections = document.querySelectorAll('.content-section');
-    let currentOpenSection = null;
+    // SIMPLE OVERLAY SYSTEM - NO COMPLEX ANIMATIONS
+    const aboutSection = document.getElementById('about');
+    const contactSection = document.getElementById('contact');
+    const aboutLink = document.querySelector('a[href="#about"]');
+    const contactLink = document.querySelector('a[href="#contact"]');
 
-    // Show content sections with smooth animation
-    document.addEventListener('click', function(e) {
-        const href = e.target.getAttribute('href');
+    let isAboutOpen = false;
+    let isContactOpen = false;
 
-        if (href === '#about') {
+    // About link click
+    if (aboutLink) {
+        aboutLink.addEventListener('click', function(e) {
             e.preventDefault();
-            e.stopPropagation();
-            toggleContentSection('about');
-        }
-
-        if (href === '#contact') {
-            e.preventDefault();
-            e.stopPropagation();
-            toggleContentSection('contact');
-        }
-    });
-
-    // Single toggle function that handles both open and close
-    function toggleContentSection(sectionId) {
-        const section = document.getElementById(sectionId);
-        if (!section) return;
-
-        // If this section is currently open, close it
-        if (currentOpenSection === section) {
-            closeContentSection(section);
-            return;
-        }
-
-        // If another section is open, close it first
-        if (currentOpenSection && currentOpenSection !== section) {
-            closeContentSection(currentOpenSection);
-        }
-
-        // Open the new section
-        openContentSection(section);
-    }
-
-    function openContentSection(section) {
-        // Force complete reset of all animation states
-        section.style.display = 'none';
-        section.classList.remove('show', 'hide', 'crossfade');
-        section.offsetHeight; // Force reflow
-
-        // Now show it
-        section.style.display = 'block';
-        section.offsetHeight; // Force reflow
-        section.classList.add('show');
-        currentOpenSection = section;
-        console.log(section.id + ' section opened');
-    }
-
-    function closeContentSection(section) {
-        section.classList.remove('show');
-        section.classList.add('hide');
-
-        setTimeout(() => {
-            section.style.display = 'none';
-            section.classList.remove('hide', 'crossfade');
-            if (currentOpenSection === section) {
-                currentOpenSection = null;
-            }
-            console.log(section.id + ' section closed');
-        }, 800);
-    }
-
-    // Close on click anywhere in the section EXCEPT email link and copy button
-    contentSections.forEach(section => {
-        section.addEventListener('click', function(e) {
-            // Don't close if clicking email link or copy button
-            if (e.target.id === 'emailLink' ||
-                e.target.id === 'copyBtn' ||
-                e.target.closest('#copyBtn') ||
-                e.target.closest('#emailLink')) {
-                return;
-            }
-
-            // Only close if this section is actually the current open one
-            if (currentOpenSection === section) {
-                closeContentSection(section);
+            
+            if (isAboutOpen) {
+                // Close about
+                aboutSection.classList.remove('show');
+                aboutSection.classList.add('hide');
+                setTimeout(() => {
+                    aboutSection.style.display = 'none';
+                    aboutSection.classList.remove('hide');
+                    isAboutOpen = false;
+                }, 800);
+            } else {
+                // Close contact if open
+                if (isContactOpen) {
+                    contactSection.style.display = 'none';
+                    contactSection.classList.remove('show', 'hide');
+                    isContactOpen = false;
+                }
+                
+                // Open about
+                aboutSection.style.display = 'none';
+                aboutSection.classList.remove('show', 'hide', 'crossfade');
+                void aboutSection.offsetHeight;
+                aboutSection.style.display = 'block';
+                void aboutSection.offsetHeight;
+                aboutSection.classList.add('show');
+                isAboutOpen = true;
             }
         });
-    });
+    }
+
+    // Contact link click
+    if (contactLink) {
+        contactLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            if (isContactOpen) {
+                // Close contact
+                contactSection.classList.remove('show');
+                contactSection.classList.add('hide');
+                setTimeout(() => {
+                    contactSection.style.display = 'none';
+                    contactSection.classList.remove('hide');
+                    isContactOpen = false;
+                }, 800);
+            } else {
+                // Close about if open
+                if (isAboutOpen) {
+                    aboutSection.style.display = 'none';
+                    aboutSection.classList.remove('show', 'hide');
+                    isAboutOpen = false;
+                }
+                
+                // Open contact
+                contactSection.style.display = 'none';
+                contactSection.classList.remove('show', 'hide', 'crossfade');
+                void contactSection.offsetHeight;
+                contactSection.style.display = 'block';
+                void contactSection.offsetHeight;
+                contactSection.classList.add('show');
+                isContactOpen = true;
+            }
+        });
+    }
+
+    // Close about when clicking on it (except links/buttons)
+    if (aboutSection) {
+        aboutSection.addEventListener('click', function(e) {
+            if (e.target.id === 'emailLink' || e.target.id === 'copyBtn' || 
+                e.target.closest('#copyBtn') || e.target.closest('#emailLink') ||
+                e.target.tagName === 'A') {
+                return;
+            }
+            
+            if (isAboutOpen) {
+                aboutSection.classList.remove('show');
+                aboutSection.classList.add('hide');
+                setTimeout(() => {
+                    aboutSection.style.display = 'none';
+                    aboutSection.classList.remove('hide');
+                    isAboutOpen = false;
+                }, 800);
+            }
+        });
+    }
+
+    // Close contact when clicking on it (except links/buttons)
+    if (contactSection) {
+        contactSection.addEventListener('click', function(e) {
+            if (e.target.id === 'emailLink' || e.target.id === 'copyBtn' || 
+                e.target.closest('#copyBtn') || e.target.closest('#emailLink') ||
+                e.target.tagName === 'A') {
+                return;
+            }
+            
+            if (isContactOpen) {
+                contactSection.classList.remove('show');
+                contactSection.classList.add('hide');
+                setTimeout(() => {
+                    contactSection.style.display = 'none';
+                    contactSection.classList.remove('hide');
+                    isContactOpen = false;
+                }, 800);
+            }
+        });
+    }
 
     // Copy email functionality
     const copyBtn = document.getElementById('copyBtn');
