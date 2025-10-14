@@ -101,137 +101,117 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 250);
     });
 
-    // ========== COMPLETELY NEW APPROACH ==========
+    // ========== MOBILE LOGIC ==========
     const aboutSection = document.getElementById('about');
     const contactSection = document.getElementById('contact');
     const aboutLink = document.querySelector('a[href="#about"]');
     const contactLink = document.querySelector('a[href="#contact"]');
 
-    let currentSection = null;
-    let canClick = true;
+    // Initialize data attributes
+    aboutSection.setAttribute('data-state', 'closed');
+    contactSection.setAttribute('data-state', 'closed');
 
-    // ABOUT LINK - using mousedown/touchstart instead of click
-    aboutLink.addEventListener('mousedown', handleAboutClick);
-    aboutLink.addEventListener('touchstart', handleAboutClick);
-
-    function handleAboutClick(e) {
+    // ABOUT LINK
+    aboutLink.addEventListener('click', function(e) {
         e.preventDefault();
-        e.stopPropagation();
 
-        if (!canClick) return;
-        canClick = false;
+        const currentState = aboutSection.getAttribute('data-state');
 
-        if (currentSection === 'about') {
-            // Close about
-            closeSection(aboutSection);
-            currentSection = null;
-            setTimeout(() => { canClick = true; }, 1000);
-        } else if (currentSection === 'contact') {
-            // Crossfade from contact to about
-            crossfade(contactSection, aboutSection);
-            currentSection = 'about';
-            setTimeout(() => { canClick = true; }, 1000);
-        } else {
+        if (currentState === 'closed') {
+            // Close contact first if open
+            if (contactSection.getAttribute('data-state') === 'open') {
+                contactSection.setAttribute('data-state', 'closed');
+                contactSection.style.display = 'none';
+                contactSection.className = 'content-section';
+            }
+
             // Open about
-            openSection(aboutSection);
-            currentSection = 'about';
-            setTimeout(() => { canClick = true; }, 1000);
-        }
-    }
+            aboutSection.setAttribute('data-state', 'open');
+            aboutSection.className = 'content-section';
+            aboutSection.style.display = 'block';
+            setTimeout(() => {
+                aboutSection.classList.add('show');
+            }, 10);
 
-    // CONTACT LINK - using mousedown/touchstart instead of click
-    contactLink.addEventListener('mousedown', handleContactClick);
-    contactLink.addEventListener('touchstart', handleContactClick);
-
-    function handleContactClick(e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        if (!canClick) return;
-        canClick = false;
-
-        if (currentSection === 'contact') {
-            // Close contact
-            closeSection(contactSection);
-            currentSection = null;
-            setTimeout(() => { canClick = true; }, 1000);
-        } else if (currentSection === 'about') {
-            // Crossfade from about to contact
-            crossfade(aboutSection, contactSection);
-            currentSection = 'contact';
-            setTimeout(() => { canClick = true; }, 1000);
         } else {
-            // Open contact
-            openSection(contactSection);
-            currentSection = 'contact';
-            setTimeout(() => { canClick = true; }, 1000);
-        }
-    }
-
-    function openSection(section) {
-        section.style.display = 'none';
-        section.className = 'content-section';
-        section.offsetHeight;
-        section.style.display = 'block';
-        section.offsetHeight;
-        section.classList.add('show');
-    }
-
-    function closeSection(section) {
-        section.classList.remove('show');
-        section.classList.add('hide');
-        setTimeout(() => {
-            section.style.display = 'none';
-            section.className = 'content-section';
-        }, 800);
-    }
-
-    function crossfade(fromSection, toSection) {
-        fromSection.classList.remove('show');
-        fromSection.classList.add('hide');
-
-        toSection.className = 'content-section crossfade';
-        toSection.style.display = 'block';
-        toSection.offsetHeight;
-        toSection.classList.add('show');
-
-        setTimeout(() => {
-            fromSection.style.display = 'none';
-            fromSection.className = 'content-section';
-        }, 800);
-    }
-
-    // CLOSE ON BACKGROUND CLICK - About
-    aboutSection.addEventListener('click', function(e) {
-        if (e.target.id === 'emailLink' || e.target.id === 'copyBtn' ||
-            e.target.closest('#copyBtn') || e.target.closest('#emailLink')) {
-            return;
-        }
-
-        if (!canClick) return;
-
-        if (currentSection === 'about') {
-            canClick = false;
-            closeSection(aboutSection);
-            currentSection = null;
-            setTimeout(() => { canClick = true; }, 1000);
+            // Close about
+            aboutSection.setAttribute('data-state', 'closed');
+            aboutSection.classList.remove('show');
+            aboutSection.classList.add('hide');
+            setTimeout(() => {
+                aboutSection.style.display = 'none';
+                aboutSection.className = 'content-section';
+            }, 800);
         }
     });
 
-    // CLOSE ON BACKGROUND CLICK - Contact
-    contactSection.addEventListener('click', function(e) {
-        if (e.target.id === 'emailLink' || e.target.id === 'copyBtn' ||
-            e.target.closest('#copyBtn') || e.target.closest('#emailLink')) {
-            return;
+    // CONTACT LINK
+    contactLink.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        const currentState = contactSection.getAttribute('data-state');
+
+        if (currentState === 'closed') {
+            // Close about first if open
+            if (aboutSection.getAttribute('data-state') === 'open') {
+                aboutSection.setAttribute('data-state', 'closed');
+                aboutSection.style.display = 'none';
+                aboutSection.className = 'content-section';
+            }
+
+            // Open contact
+            contactSection.setAttribute('data-state', 'open');
+            contactSection.className = 'content-section';
+            contactSection.style.display = 'block';
+            setTimeout(() => {
+                contactSection.classList.add('show');
+            }, 10);
+
+        } else {
+            // Close contact
+            contactSection.setAttribute('data-state', 'closed');
+            contactSection.classList.remove('show');
+            contactSection.classList.add('hide');
+            setTimeout(() => {
+                contactSection.style.display = 'none';
+                contactSection.className = 'content-section';
+            }, 800);
         }
+    });
 
-        if (!canClick) return;
+    // CLOSE ON BACKGROUND CLICK - ABOUT
+    aboutSection.addEventListener('click', function(e) {
+        // Only close if clicking directly on the scrollable-area (the background), not the content
+        if (e.target.classList.contains('scrollable-area') ||
+            e.target.classList.contains('content-section')) {
 
-        if (currentSection === 'contact') {
-            canClick = false;
-            closeSection(contactSection);
-            currentSection = null;
-            setTimeout(() => { canClick = true; }, 1000);
+            if (aboutSection.getAttribute('data-state') === 'open') {
+                aboutSection.setAttribute('data-state', 'closed');
+                aboutSection.classList.remove('show');
+                aboutSection.classList.add('hide');
+                setTimeout(() => {
+                    aboutSection.style.display = 'none';
+                    aboutSection.className = 'content-section';
+                }, 800);
+            }
+        }
+    });
+
+    // CLOSE ON BACKGROUND CLICK - CONTACT
+    contactSection.addEventListener('click', function(e) {
+        // Only close if clicking directly on the scrollable-area (the background), not the content
+        if (e.target.classList.contains('scrollable-area') ||
+            e.target.classList.contains('content-section')) {
+
+            if (contactSection.getAttribute('data-state') === 'open') {
+                contactSection.setAttribute('data-state', 'closed');
+                contactSection.classList.remove('show');
+                contactSection.classList.add('hide');
+                setTimeout(() => {
+                    contactSection.style.display = 'none';
+                    contactSection.className = 'content-section';
+                }, 800);
+            }
         }
     });
 
