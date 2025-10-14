@@ -356,7 +356,7 @@ html, body {
 
 
 
-    .menu-item a {
+    .test {
     color: red;  /* CHANGE THIS COLOR */
     text-decoration: none;
     transition: color 2s ease-in-out;
