@@ -101,119 +101,195 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 250);
     });
 
-    // ========== MOBILE LOGIC ==========
+    // ========== GHOST CLICK FIX FOR MOBILE ==========
     const aboutSection = document.getElementById('about');
     const contactSection = document.getElementById('contact');
     const aboutLink = document.querySelector('a[href="#about"]');
     const contactLink = document.querySelector('a[href="#contact"]');
 
-    // Initialize data attributes
-    aboutSection.setAttribute('data-state', 'closed');
-    contactSection.setAttribute('data-state', 'closed');
+    let currentSection = null;
+    let lastTapTime = 0;
+    const tapDelay = 500; // Prevent rapid taps
 
-    // ABOUT LINK
-    aboutLink.addEventListener('click', function(e) {
-        e.preventDefault();
+    // Prevent ALL click events on mobile - use touch only
+    const isMobile = 'ontouchstart' in window;
 
-        const currentState = aboutSection.getAttribute('data-state');
+    if (isMobile) {
+        // MOBILE: Use touchend only, block all clicks
+        document.addEventListener('click', function(e) {
+            // Block all clicks on mobile
+            if (e.target.closest('a[href^="#"]')) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+        }, true);
 
-        if (currentState === 'closed') {
-            // Close contact first if open
-            if (contactSection.getAttribute('data-state') === 'open') {
-                contactSection.setAttribute('data-state', 'closed');
-                contactSection.style.display = 'none';
-                contactSection.className = 'content-section';
+        // About link - touchend only
+        aboutLink.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const now = Date.now();
+            if (now - lastTapTime < tapDelay) return;
+            lastTapTime = now;
+
+            if (currentSection === 'about') {
+                closeSection(aboutSection);
+                currentSection = null;
+            } else if (currentSection === 'contact') {
+                crossfade(contactSection, aboutSection);
+                currentSection = 'about';
+            } else {
+                openSection(aboutSection);
+                currentSection = 'about';
+            }
+        });
+
+        // Contact link - touchend only
+        contactLink.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const now = Date.now();
+            if (now - lastTapTime < tapDelay) return;
+            lastTapTime = now;
+
+            if (currentSection === 'contact') {
+                closeSection(contactSection);
+                currentSection = null;
+            } else if (currentSection === 'about') {
+                crossfade(aboutSection, contactSection);
+                currentSection = 'contact';
+            } else {
+                openSection(contactSection);
+                currentSection = 'contact';
+            }
+        });
+
+        // Close on touch - About
+        aboutSection.addEventListener('touchend', function(e) {
+            if (e.target.id === 'emailLink' || e.target.id === 'copyBtn' ||
+                e.target.closest('#copyBtn') || e.target.closest('#emailLink')) {
+                return;
             }
 
-            // Open about
-            aboutSection.setAttribute('data-state', 'open');
-            aboutSection.className = 'content-section';
-            aboutSection.style.display = 'block';
-            setTimeout(() => {
-                aboutSection.classList.add('show');
-            }, 10);
+            const now = Date.now();
+            if (now - lastTapTime < tapDelay) return;
+            lastTapTime = now;
 
-        } else {
-            // Close about
-            aboutSection.setAttribute('data-state', 'closed');
-            aboutSection.classList.remove('show');
-            aboutSection.classList.add('hide');
-            setTimeout(() => {
-                aboutSection.style.display = 'none';
-                aboutSection.className = 'content-section';
-            }, 800);
-        }
-    });
+            if (currentSection === 'about') {
+                closeSection(aboutSection);
+                currentSection = null;
+            }
+        });
 
-    // CONTACT LINK
-    contactLink.addEventListener('click', function(e) {
-        e.preventDefault();
-
-        const currentState = contactSection.getAttribute('data-state');
-
-        if (currentState === 'closed') {
-            // Close about first if open
-            if (aboutSection.getAttribute('data-state') === 'open') {
-                aboutSection.setAttribute('data-state', 'closed');
-                aboutSection.style.display = 'none';
-                aboutSection.className = 'content-section';
+        // Close on touch - Contact
+        contactSection.addEventListener('touchend', function(e) {
+            if (e.target.id === 'emailLink' || e.target.id === 'copyBtn' ||
+                e.target.closest('#copyBtn') || e.target.closest('#emailLink')) {
+                return;
             }
 
-            // Open contact
-            contactSection.setAttribute('data-state', 'open');
-            contactSection.className = 'content-section';
-            contactSection.style.display = 'block';
-            setTimeout(() => {
-                contactSection.classList.add('show');
-            }, 10);
+            const now = Date.now();
+            if (now - lastTapTime < tapDelay) return;
+            lastTapTime = now;
 
-        } else {
-            // Close contact
-            contactSection.setAttribute('data-state', 'closed');
-            contactSection.classList.remove('show');
-            contactSection.classList.add('hide');
-            setTimeout(() => {
-                contactSection.style.display = 'none';
-                contactSection.className = 'content-section';
-            }, 800);
-        }
-    });
-
-    // CLOSE ON BACKGROUND CLICK - ABOUT
-    aboutSection.addEventListener('click', function(e) {
-        // Only close if clicking directly on the scrollable-area (the background), not the content
-        if (e.target.classList.contains('scrollable-area') ||
-            e.target.classList.contains('content-section')) {
-
-            if (aboutSection.getAttribute('data-state') === 'open') {
-                aboutSection.setAttribute('data-state', 'closed');
-                aboutSection.classList.remove('show');
-                aboutSection.classList.add('hide');
-                setTimeout(() => {
-                    aboutSection.style.display = 'none';
-                    aboutSection.className = 'content-section';
-                }, 800);
+            if (currentSection === 'contact') {
+                closeSection(contactSection);
+                currentSection = null;
             }
-        }
-    });
+        });
 
-    // CLOSE ON BACKGROUND CLICK - CONTACT
-    contactSection.addEventListener('click', function(e) {
-        // Only close if clicking directly on the scrollable-area (the background), not the content
-        if (e.target.classList.contains('scrollable-area') ||
-            e.target.classList.contains('content-section')) {
+    } else {
+        // DESKTOP: Use click events
+        aboutLink.addEventListener('click', function(e) {
+            e.preventDefault();
 
-            if (contactSection.getAttribute('data-state') === 'open') {
-                contactSection.setAttribute('data-state', 'closed');
-                contactSection.classList.remove('show');
-                contactSection.classList.add('hide');
-                setTimeout(() => {
-                    contactSection.style.display = 'none';
-                    contactSection.className = 'content-section';
-                }, 800);
+            if (currentSection === 'about') {
+                closeSection(aboutSection);
+                currentSection = null;
+            } else if (currentSection === 'contact') {
+                crossfade(contactSection, aboutSection);
+                currentSection = 'about';
+            } else {
+                openSection(aboutSection);
+                currentSection = 'about';
             }
-        }
-    });
+        });
+
+        contactLink.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            if (currentSection === 'contact') {
+                closeSection(contactSection);
+                currentSection = null;
+            } else if (currentSection === 'about') {
+                crossfade(aboutSection, contactSection);
+                currentSection = 'contact';
+            } else {
+                openSection(contactSection);
+                currentSection = 'contact';
+            }
+        });
+
+        aboutSection.addEventListener('click', function(e) {
+            if (e.target.id === 'emailLink' || e.target.id === 'copyBtn' ||
+                e.target.closest('#copyBtn') || e.target.closest('#emailLink')) {
+                return;
+            }
+
+            if (currentSection === 'about') {
+                closeSection(aboutSection);
+                currentSection = null;
+            }
+        });
+
+        contactSection.addEventListener('click', function(e) {
+            if (e.target.id === 'emailLink' || e.target.id === 'copyBtn' ||
+                e.target.closest('#copyBtn') || e.target.closest('#emailLink')) {
+                return;
+            }
+
+            if (currentSection === 'contact') {
+                closeSection(contactSection);
+                currentSection = null;
+            }
+        });
+    }
+
+    function openSection(section) {
+        section.style.display = 'none';
+        section.className = 'content-section';
+        section.offsetHeight;
+        section.style.display = 'block';
+        section.offsetHeight;
+        section.classList.add('show');
+    }
+
+    function closeSection(section) {
+        section.classList.remove('show');
+        section.classList.add('hide');
+        setTimeout(() => {
+            section.style.display = 'none';
+            section.className = 'content-section';
+        }, 800);
+    }
+
+    function crossfade(fromSection, toSection) {
+        fromSection.classList.remove('show');
+        fromSection.classList.add('hide');
+
+        toSection.className = 'content-section crossfade';
+        toSection.style.display = 'block';
+        toSection.offsetHeight;
+        toSection.classList.add('show');
+
+        setTimeout(() => {
+            fromSection.style.display = 'none';
+            fromSection.className = 'content-section';
+        }, 800);
+    }
 
     // Copy email functionality
     const copyBtn = document.getElementById('copyBtn');
