@@ -107,110 +107,78 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 250);
     });
 
-    // Enhanced content section handling
+    // Content section handling - SIMPLIFIED APPROACH
     const contentSections = document.querySelectorAll('.content-section');
     let currentOpenSection = null;
-    let touchHandled = false;
 
-    // Detect if device is mobile
-    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    // Show content sections with smooth animation
+    document.addEventListener('click', function(e) {
+        const href = e.target.getAttribute('href');
 
-    // Handle navigation link clicks
-    function handleNavigation(e, sectionId) {
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        showContentSection(sectionId);
-    }
-
-    // Add event listeners to navigation links
-    const aboutLink = document.querySelector('a[href="#about"]');
-    const contactLink = document.querySelector('a[href="#contact"]');
-
-    if (isMobileDevice) {
-        // For mobile: use touchend to prevent ghost clicks
-        if (aboutLink) {
-            aboutLink.addEventListener('touchend', function(e) {
-                touchHandled = true;
-                handleNavigation(e, 'about');
-                setTimeout(() => { touchHandled = false; }, 300);
-            }, { passive: false });
+        if (href === '#about') {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleContentSection('about');
         }
-        if (contactLink) {
-            contactLink.addEventListener('touchend', function(e) {
-                touchHandled = true;
-                handleNavigation(e, 'contact');
-                setTimeout(() => { touchHandled = false; }, 300);
-            }, { passive: false });
-        }
-    } else {
-        // For desktop: use click
-        if (aboutLink) {
-            aboutLink.addEventListener('click', function(e) {
-                handleNavigation(e, 'about');
-            });
-        }
-        if (contactLink) {
-            contactLink.addEventListener('click', function(e) {
-                handleNavigation(e, 'contact');
-            });
-        }
-    }
 
-    function showContentSection(sectionId) {
+        if (href === '#contact') {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleContentSection('contact');
+        }
+    });
+
+    // Single toggle function that handles both open and close
+    function toggleContentSection(sectionId) {
         const section = document.getElementById(sectionId);
         if (!section) return;
 
-        if (currentOpenSection === section) return;
-
-        if (currentOpenSection && currentOpenSection !== section) {
-            crossfadeToSection(currentOpenSection, section);
-        } else {
-            section.classList.remove('hide', 'crossfade');
-            section.style.display = 'block';
-            section.offsetHeight;
-            section.classList.add('show');
-            currentOpenSection = section;
-            console.log(sectionId + ' section shown with animation');
+        // If this section is currently open, close it
+        if (currentOpenSection === section) {
+            closeContentSection(section);
+            return;
         }
+
+        // If another section is open, close it first
+        if (currentOpenSection && currentOpenSection !== section) {
+            closeContentSection(currentOpenSection);
+        }
+
+        // Open the new section
+        openContentSection(section);
     }
 
-    function crossfadeToSection(fromSection, toSection) {
-        console.log('Crossfading sections');
+    function openContentSection(section) {
+        // Force complete reset of all animation states
+        section.style.display = 'none';
+        section.classList.remove('show', 'hide', 'crossfade');
+        section.offsetHeight; // Force reflow
 
-        toSection.classList.add('crossfade');
-        fromSection.classList.remove('show');
-        fromSection.classList.add('hide');
-
-        toSection.classList.remove('hide');
-        toSection.style.display = 'block';
-        toSection.offsetHeight;
-        toSection.classList.add('show');
-
-        setTimeout(() => {
-            fromSection.style.display = 'none';
-            fromSection.classList.remove('hide');
-            currentOpenSection = toSection;
-        }, 800);
+        // Now show it
+        section.style.display = 'block';
+        section.offsetHeight; // Force reflow
+        section.classList.add('show');
+        currentOpenSection = section;
+        console.log(section.id + ' section opened');
     }
 
-    function hideContentSection(section) {
+    function closeContentSection(section) {
         section.classList.remove('show');
         section.classList.add('hide');
-        currentOpenSection = null;
 
         setTimeout(() => {
             section.style.display = 'none';
             section.classList.remove('hide', 'crossfade');
+            if (currentOpenSection === section) {
+                currentOpenSection = null;
+            }
+            console.log(section.id + ' section closed');
         }, 800);
     }
 
-    // Close on touch/click anywhere in the section EXCEPT email link and copy button
+    // Close on click anywhere in the section EXCEPT email link and copy button
     contentSections.forEach(section => {
-        const closeHandler = function(e) {
-            // Ignore if touch was already handled by nav link
-            if (touchHandled) return;
-
+        section.addEventListener('click', function(e) {
             // Don't close if clicking email link or copy button
             if (e.target.id === 'emailLink' ||
                 e.target.id === 'copyBtn' ||
@@ -218,23 +186,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.target.closest('#emailLink')) {
                 return;
             }
-            hideContentSection(section);
-            console.log('Content section closed with animation');
-        };
 
-        if (isMobileDevice) {
-            section.addEventListener('touchend', closeHandler);
-        } else {
-            section.addEventListener('click', closeHandler);
-        }
+            // Only close if this section is actually the current open one
+            if (currentOpenSection === section) {
+                closeContentSection(section);
+            }
+        });
     });
 
     // Copy email functionality
     const copyBtn = document.getElementById('copyBtn');
     if (copyBtn) {
-        const copyHandler = function(e) {
+        copyBtn.addEventListener('click', function(e) {
             e.stopPropagation();
-            e.preventDefault();
             const email = 'info@suitman.org';
             navigator.clipboard.writeText(email).then(() => {
                 copyBtn.textContent = '✓';
@@ -245,13 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }).catch(err => {
                 console.error('Failed to copy:', err);
             });
-        };
-
-        if (isMobileDevice) {
-            copyBtn.addEventListener('touchend', copyHandler);
-        } else {
-            copyBtn.addEventListener('click', copyHandler);
-        }
+        });
     }
 });
 
