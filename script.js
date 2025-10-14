@@ -101,91 +101,165 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 250);
     });
 
-    // ========== MOBILE LOGIC ==========
+    // ========== SECTIONS ==========
     const aboutSection = document.getElementById('about');
     const contactSection = document.getElementById('contact');
     const aboutLink = document.querySelector('a[href="#about"]');
     const contactLink = document.querySelector('a[href="#contact"]');
 
-    // Initialize data attributes
-    aboutSection.setAttribute('data-state', 'closed');
-    contactSection.setAttribute('data-state', 'closed');
+    // Detect if touch device
+    const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 
-    // ABOUT LINK
-    aboutLink.addEventListener('click', function(e) {
-        e.preventDefault();
+    if (isTouchDevice) {
+        // ========== MOBILE ONLY - SUPER SIMPLE ==========
+        console.log('Using mobile touch logic');
 
-        const currentState = aboutSection.getAttribute('data-state');
+        let aboutOpen = false;
+        let contactOpen = false;
 
-        if (currentState === 'closed') {
-            // Close contact first if open
-            if (contactSection.getAttribute('data-state') === 'open') {
-                contactSection.setAttribute('data-state', 'closed');
-                contactSection.style.display = 'none';
-                contactSection.className = 'content-section';
-            }
+        // Disable all click events on links for mobile
+        aboutLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            return false;
+        });
+        contactLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            return false;
+        });
 
-            // Open about
-            aboutSection.setAttribute('data-state', 'open');
-            aboutSection.className = 'content-section';
-            aboutSection.style.display = 'block';
-            setTimeout(() => {
+        // Use touchstart for immediate response
+        aboutLink.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (!aboutOpen) {
+                // Close contact if open
+                if (contactOpen) {
+                    contactSection.style.display = 'none';
+                    contactSection.className = 'content-section';
+                    contactOpen = false;
+                }
+                // Open about
+                aboutSection.className = 'content-section';
+                aboutSection.style.display = 'block';
+                void aboutSection.offsetHeight;
                 aboutSection.classList.add('show');
-            }, 10);
-
-        } else {
-            // Close about
-            aboutSection.setAttribute('data-state', 'closed');
-            aboutSection.classList.remove('show');
-            aboutSection.classList.add('hide');
-            setTimeout(() => {
-                aboutSection.style.display = 'none';
-                aboutSection.className = 'content-section';
-            }, 800);
-        }
-    });
-
-    // CONTACT LINK
-    contactLink.addEventListener('click', function(e) {
-        e.preventDefault();
-
-        const currentState = contactSection.getAttribute('data-state');
-
-        if (currentState === 'closed') {
-            // Close about first if open
-            if (aboutSection.getAttribute('data-state') === 'open') {
-                aboutSection.setAttribute('data-state', 'closed');
-                aboutSection.style.display = 'none';
-                aboutSection.className = 'content-section';
+                aboutOpen = true;
+            } else {
+                // Close about
+                aboutSection.classList.remove('show');
+                aboutSection.classList.add('hide');
+                setTimeout(() => {
+                    aboutSection.style.display = 'none';
+                    aboutSection.className = 'content-section';
+                    aboutOpen = false;
+                }, 800);
             }
+        }, { passive: false });
 
-            // Open contact
-            contactSection.setAttribute('data-state', 'open');
-            contactSection.className = 'content-section';
-            contactSection.style.display = 'block';
-            setTimeout(() => {
-                contactSection.classList.add('show');
-            }, 10);
+        contactLink.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
 
-        } else {
-            // Close contact
-            contactSection.setAttribute('data-state', 'closed');
-            contactSection.classList.remove('show');
-            contactSection.classList.add('hide');
-            setTimeout(() => {
-                contactSection.style.display = 'none';
+            if (!contactOpen) {
+                // Close about if open
+                if (aboutOpen) {
+                    aboutSection.style.display = 'none';
+                    aboutSection.className = 'content-section';
+                    aboutOpen = false;
+                }
+                // Open contact
                 contactSection.className = 'content-section';
-            }, 800);
-        }
-    });
+                contactSection.style.display = 'block';
+                void contactSection.offsetHeight;
+                contactSection.classList.add('show');
+                contactOpen = true;
+            } else {
+                // Close contact
+                contactSection.classList.remove('show');
+                contactSection.classList.add('hide');
+                setTimeout(() => {
+                    contactSection.style.display = 'none';
+                    contactSection.className = 'content-section';
+                    contactOpen = false;
+                }, 800);
+            }
+        }, { passive: false });
 
-    // CLOSE ON BACKGROUND CLICK - ABOUT
-    aboutSection.addEventListener('click', function(e) {
-        // Only close if clicking directly on the scrollable-area (the background), not the content
-        if (e.target.classList.contains('scrollable-area') ||
-            e.target.classList.contains('content-section')) {
+        // Close on background tap
+        aboutSection.addEventListener('touchstart', function(e) {
+            if (e.target.classList.contains('scrollable-area') ||
+                e.target.classList.contains('content-section')) {
+                if (aboutOpen) {
+                    aboutSection.classList.remove('show');
+                    aboutSection.classList.add('hide');
+                    setTimeout(() => {
+                        aboutSection.style.display = 'none';
+                        aboutSection.className = 'content-section';
+                        aboutOpen = false;
+                    }, 800);
+                }
+            }
+        });
 
-            if (aboutSection.getAttribute('data-state') === 'open') {
+        contactSection.addEventListener('touchstart', function(e) {
+            if (e.target.classList.contains('scrollable-area') ||
+                e.target.classList.contains('content-section')) {
+                if (contactOpen) {
+                    contactSection.classList.remove('show');
+                    contactSection.classList.add('hide');
+                    setTimeout(() => {
+                        contactSection.style.display = 'none';
+                        contactSection.className = 'content-section';
+                        contactOpen = false;
+                    }, 800);
+                }
+            }
+        });
+
+    } else {
+        // ========== DESKTOP ONLY - YOUR WORKING CODE ==========
+        console.log('Using desktop click logic');
+
+        aboutSection.setAttribute('data-state', 'closed');
+        contactSection.setAttribute('data-state', 'closed');
+
+        // ABOUT LINK
+        aboutLink.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            const aboutState = aboutSection.getAttribute('data-state');
+            const contactState = contactSection.getAttribute('data-state');
+
+            if (aboutState === 'closed') {
+                if (contactState === 'open') {
+                    // CROSSFADE
+                    contactSection.setAttribute('data-state', 'closed');
+                    contactSection.classList.remove('show');
+                    contactSection.classList.add('hide');
+
+                    aboutSection.setAttribute('data-state', 'open');
+                    aboutSection.className = 'content-section crossfade';
+                    aboutSection.style.display = 'block';
+                    setTimeout(() => {
+                        aboutSection.classList.add('show');
+                    }, 10);
+
+                    setTimeout(() => {
+                        contactSection.style.display = 'none';
+                        contactSection.className = 'content-section';
+                    }, 800);
+                } else {
+                    // Normal open
+                    aboutSection.setAttribute('data-state', 'open');
+                    aboutSection.className = 'content-section';
+                    aboutSection.style.display = 'block';
+                    setTimeout(() => {
+                        aboutSection.classList.add('show');
+                    }, 10);
+                }
+            } else {
+                // Close about
                 aboutSection.setAttribute('data-state', 'closed');
                 aboutSection.classList.remove('show');
                 aboutSection.classList.add('hide');
@@ -194,16 +268,44 @@ document.addEventListener('DOMContentLoaded', function() {
                     aboutSection.className = 'content-section';
                 }, 800);
             }
-        }
-    });
+        });
 
-    // CLOSE ON BACKGROUND CLICK - CONTACT
-    contactSection.addEventListener('click', function(e) {
-        // Only close if clicking directly on the scrollable-area (the background), not the content
-        if (e.target.classList.contains('scrollable-area') ||
-            e.target.classList.contains('content-section')) {
+        // CONTACT LINK
+        contactLink.addEventListener('click', function(e) {
+            e.preventDefault();
 
-            if (contactSection.getAttribute('data-state') === 'open') {
+            const aboutState = aboutSection.getAttribute('data-state');
+            const contactState = contactSection.getAttribute('data-state');
+
+            if (contactState === 'closed') {
+                if (aboutState === 'open') {
+                    // CROSSFADE
+                    aboutSection.setAttribute('data-state', 'closed');
+                    aboutSection.classList.remove('show');
+                    aboutSection.classList.add('hide');
+
+                    contactSection.setAttribute('data-state', 'open');
+                    contactSection.className = 'content-section crossfade';
+                    contactSection.style.display = 'block';
+                    setTimeout(() => {
+                        contactSection.classList.add('show');
+                    }, 10);
+
+                    setTimeout(() => {
+                        aboutSection.style.display = 'none';
+                        aboutSection.className = 'content-section';
+                    }, 800);
+                } else {
+                    // Normal open
+                    contactSection.setAttribute('data-state', 'open');
+                    contactSection.className = 'content-section';
+                    contactSection.style.display = 'block';
+                    setTimeout(() => {
+                        contactSection.classList.add('show');
+                    }, 10);
+                }
+            } else {
+                // Close contact
                 contactSection.setAttribute('data-state', 'closed');
                 contactSection.classList.remove('show');
                 contactSection.classList.add('hide');
@@ -212,8 +314,39 @@ document.addEventListener('DOMContentLoaded', function() {
                     contactSection.className = 'content-section';
                 }, 800);
             }
-        }
-    });
+        });
+
+        // CLOSE ON BACKGROUND CLICK
+        aboutSection.addEventListener('click', function(e) {
+            if (e.target.classList.contains('scrollable-area') ||
+                e.target.classList.contains('content-section')) {
+                if (aboutSection.getAttribute('data-state') === 'open') {
+                    aboutSection.setAttribute('data-state', 'closed');
+                    aboutSection.classList.remove('show');
+                    aboutSection.classList.add('hide');
+                    setTimeout(() => {
+                        aboutSection.style.display = 'none';
+                        aboutSection.className = 'content-section';
+                    }, 800);
+                }
+            }
+        });
+
+        contactSection.addEventListener('click', function(e) {
+            if (e.target.classList.contains('scrollable-area') ||
+                e.target.classList.contains('content-section')) {
+                if (contactSection.getAttribute('data-state') === 'open') {
+                    contactSection.setAttribute('data-state', 'closed');
+                    contactSection.classList.remove('show');
+                    contactSection.classList.add('hide');
+                    setTimeout(() => {
+                        contactSection.style.display = 'none';
+                        contactSection.className = 'content-section';
+                    }, 800);
+                }
+            }
+        });
+    }
 
     // Copy email functionality
     const copyBtn = document.getElementById('copyBtn');
