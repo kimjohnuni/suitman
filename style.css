@@ -357,13 +357,7 @@ html, body {
 
 
 
-    .test {
-    color: green;  /* CHANGE THIS COLOR */
-    text-decoration: none;
-    transition: color 2s ease-in-out;
-    display: block;
-    cursor: pointer;
-}
+  
 }
 
 @media (max-width: 480px) {

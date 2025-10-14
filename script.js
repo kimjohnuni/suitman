@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 250);
     });
 
-    // ========== COMPLETELY NEW MOBILE LOGIC ==========
+    // ========== MOBILE LOGIC ==========
     const aboutSection = document.getElementById('about');
     const contactSection = document.getElementById('contact');
     const aboutLink = document.querySelector('a[href="#about"]');
@@ -181,41 +181,37 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // CLOSE ON BACKGROUND CLICK - ABOUT
     aboutSection.addEventListener('click', function(e) {
-        if (e.target.id === 'emailLink' || e.target.id === 'copyBtn' ||
-            e.target.closest('#copyBtn') || e.target.closest('#emailLink') ||
-            e.target.classList.contains('scrollable-content') ||
-            e.target.closest('.scrollable-content')) {
-            return;
-        }
+        // Only close if clicking directly on the scrollable-area (the background), not the content
+        if (e.target.classList.contains('scrollable-area') ||
+            e.target.classList.contains('content-section')) {
 
-        if (aboutSection.getAttribute('data-state') === 'open') {
-            aboutSection.setAttribute('data-state', 'closed');
-            aboutSection.classList.remove('show');
-            aboutSection.classList.add('hide');
-            setTimeout(() => {
-                aboutSection.style.display = 'none';
-                aboutSection.className = 'content-section';
-            }, 800);
+            if (aboutSection.getAttribute('data-state') === 'open') {
+                aboutSection.setAttribute('data-state', 'closed');
+                aboutSection.classList.remove('show');
+                aboutSection.classList.add('hide');
+                setTimeout(() => {
+                    aboutSection.style.display = 'none';
+                    aboutSection.className = 'content-section';
+                }, 800);
+            }
         }
     });
 
     // CLOSE ON BACKGROUND CLICK - CONTACT
     contactSection.addEventListener('click', function(e) {
-        if (e.target.id === 'emailLink' || e.target.id === 'copyBtn' ||
-            e.target.closest('#copyBtn') || e.target.closest('#emailLink') ||
-            e.target.classList.contains('scrollable-content') ||
-            e.target.closest('.scrollable-content')) {
-            return;
-        }
+        // Only close if clicking directly on the scrollable-area (the background), not the content
+        if (e.target.classList.contains('scrollable-area') ||
+            e.target.classList.contains('content-section')) {
 
-        if (contactSection.getAttribute('data-state') === 'open') {
-            contactSection.setAttribute('data-state', 'closed');
-            contactSection.classList.remove('show');
-            contactSection.classList.add('hide');
-            setTimeout(() => {
-                contactSection.style.display = 'none';
-                contactSection.className = 'content-section';
-            }, 800);
+            if (contactSection.getAttribute('data-state') === 'open') {
+                contactSection.setAttribute('data-state', 'closed');
+                contactSection.classList.remove('show');
+                contactSection.classList.add('hide');
+                setTimeout(() => {
+                    contactSection.style.display = 'none';
+                    contactSection.className = 'content-section';
+                }, 800);
+            }
         }
     });
 
