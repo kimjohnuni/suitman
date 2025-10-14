@@ -111,29 +111,37 @@ document.addEventListener('DOMContentLoaded', function() {
     const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 
     if (isTouchDevice) {
-        // ========== MOBILE ONLY - SUPER SIMPLE ==========
+        // ========== MOBILE ONLY ==========
         console.log('Using mobile touch logic');
 
         let aboutOpen = false;
         let contactOpen = false;
+        let isAnimating = false;
+        let touchHandled = false;
 
-        // Disable all click events on links for mobile
-        aboutLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            return false;
-        });
-        contactLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            return false;
-        });
+        // Prevent click events completely on mobile
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('a[href^="#"]')) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                return false;
+            }
+        }, true);
 
-        // Use touchstart for immediate response
-        aboutLink.addEventListener('touchstart', function(e) {
+        // About link - touchend
+        aboutLink.addEventListener('touchend', function(e) {
             e.preventDefault();
             e.stopPropagation();
 
+            if (isAnimating) return;
+
+            touchHandled = true;
+            setTimeout(() => { touchHandled = false; }, 400);
+
             if (!aboutOpen) {
-                // Close contact if open
+                isAnimating = true;
+                // Close contact if open (no animation, instant)
                 if (contactOpen) {
                     contactSection.style.display = 'none';
                     contactSection.className = 'content-section';
@@ -145,24 +153,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 void aboutSection.offsetHeight;
                 aboutSection.classList.add('show');
                 aboutOpen = true;
+                setTimeout(() => { isAnimating = false; }, 100);
             } else {
+                isAnimating = true;
                 // Close about
                 aboutSection.classList.remove('show');
                 aboutSection.classList.add('hide');
+                aboutOpen = false;
                 setTimeout(() => {
                     aboutSection.style.display = 'none';
                     aboutSection.className = 'content-section';
-                    aboutOpen = false;
-                }, 800);
+                    isAnimating = false;
+                }, 900);
             }
         }, { passive: false });
 
-        contactLink.addEventListener('touchstart', function(e) {
+        // Contact link - touchend
+        contactLink.addEventListener('touchend', function(e) {
             e.preventDefault();
             e.stopPropagation();
 
+            if (isAnimating) return;
+
+            touchHandled = true;
+            setTimeout(() => { touchHandled = false; }, 400);
+
             if (!contactOpen) {
-                // Close about if open
+                isAnimating = true;
+                // Close about if open (no animation, instant)
                 if (aboutOpen) {
                     aboutSection.style.display = 'none';
                     aboutSection.className = 'content-section';
@@ -174,51 +192,65 @@ document.addEventListener('DOMContentLoaded', function() {
                 void contactSection.offsetHeight;
                 contactSection.classList.add('show');
                 contactOpen = true;
+                setTimeout(() => { isAnimating = false; }, 100);
             } else {
+                isAnimating = true;
                 // Close contact
                 contactSection.classList.remove('show');
                 contactSection.classList.add('hide');
+                contactOpen = false;
                 setTimeout(() => {
                     contactSection.style.display = 'none';
                     contactSection.className = 'content-section';
-                    contactOpen = false;
-                }, 800);
+                    isAnimating = false;
+                }, 900);
             }
         }, { passive: false });
 
-        // Close on background tap
-        aboutSection.addEventListener('touchstart', function(e) {
+        // Close on background tap - About
+        aboutSection.addEventListener('touchend', function(e) {
+            if (touchHandled) return;
+
             if (e.target.classList.contains('scrollable-area') ||
                 e.target.classList.contains('content-section')) {
-                if (aboutOpen) {
+
+                if (aboutOpen && !isAnimating) {
+                    isAnimating = true;
                     aboutSection.classList.remove('show');
                     aboutSection.classList.add('hide');
+                    aboutOpen = false;
                     setTimeout(() => {
                         aboutSection.style.display = 'none';
                         aboutSection.className = 'content-section';
-                        aboutOpen = false;
-                    }, 800);
+                        isAnimating = false;
+                    }, 900);
                 }
             }
         });
 
-        contactSection.addEventListener('touchstart', function(e) {
+        // Close on background tap - Contact
+        contactSection.addEventListener('touchend', function(e) {
+            if (touchHandled) return;
+
             if (e.target.classList.contains('scrollable-area') ||
                 e.target.classList.contains('content-section')) {
-                if (contactOpen) {
+
+                if (contactOpen && !isAnimating) {
+                    isAnimating = true;
                     contactSection.classList.remove('show');
                     contactSection.classList.add('hide');
+                    contactOpen = false;
                     setTimeout(() => {
                         contactSection.style.display = 'none';
                         contactSection.className = 'content-section';
-                        contactOpen = false;
-                    }, 800);
+                        isAnimating = false;
+                    }, 900);
                 }
             }
         });
 
     } else {
-        // ========== DESKTOP ONLY - YOUR WORKING CODE ==========
+        // ========== DESKTOP ONLY ==========
         console.log('Using desktop click logic');
 
         aboutSection.setAttribute('data-state', 'closed');
