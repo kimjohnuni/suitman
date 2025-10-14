@@ -111,14 +111,22 @@ document.addEventListener('DOMContentLoaded', function() {
     aboutSection.setAttribute('data-state', 'closed');
     contactSection.setAttribute('data-state', 'closed');
 
+    // Prevent rapid clicking
+    let isTransitioning = false;
+
     // ABOUT LINK
     aboutLink.addEventListener('click', function(e) {
         e.preventDefault();
+        e.stopPropagation();
+
+        if (isTransitioning) return;
 
         const aboutState = aboutSection.getAttribute('data-state');
         const contactState = contactSection.getAttribute('data-state');
 
         if (aboutState === 'closed') {
+            isTransitioning = true;
+
             // Check if contact is open for crossfade
             if (contactState === 'open') {
                 // CROSSFADE: Contact to About
@@ -138,6 +146,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => {
                     contactSection.style.display = 'none';
                     contactSection.className = 'content-section';
+                    isTransitioning = false;
                 }, 800);
             } else {
                 // Normal open
@@ -146,16 +155,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 aboutSection.style.display = 'block';
                 setTimeout(() => {
                     aboutSection.classList.add('show');
+                    isTransitioning = false;
                 }, 10);
             }
         } else {
             // Close about
+            isTransitioning = true;
             aboutSection.setAttribute('data-state', 'closed');
             aboutSection.classList.remove('show');
             aboutSection.classList.add('hide');
             setTimeout(() => {
                 aboutSection.style.display = 'none';
                 aboutSection.className = 'content-section';
+                isTransitioning = false;
             }, 800);
         }
     });
@@ -163,11 +175,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // CONTACT LINK
     contactLink.addEventListener('click', function(e) {
         e.preventDefault();
+        e.stopPropagation();
+
+        if (isTransitioning) return;
 
         const aboutState = aboutSection.getAttribute('data-state');
         const contactState = contactSection.getAttribute('data-state');
 
         if (contactState === 'closed') {
+            isTransitioning = true;
+
             // Check if about is open for crossfade
             if (aboutState === 'open') {
                 // CROSSFADE: About to Contact
@@ -187,6 +204,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => {
                     aboutSection.style.display = 'none';
                     aboutSection.className = 'content-section';
+                    isTransitioning = false;
                 }, 800);
             } else {
                 // Normal open
@@ -195,16 +213,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 contactSection.style.display = 'block';
                 setTimeout(() => {
                     contactSection.classList.add('show');
+                    isTransitioning = false;
                 }, 10);
             }
         } else {
             // Close contact
+            isTransitioning = true;
             contactSection.setAttribute('data-state', 'closed');
             contactSection.classList.remove('show');
             contactSection.classList.add('hide');
             setTimeout(() => {
                 contactSection.style.display = 'none';
                 contactSection.className = 'content-section';
+                isTransitioning = false;
             }, 800);
         }
     });
@@ -217,14 +238,23 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        if (isTransitioning) return;
+
         if (aboutSection.getAttribute('data-state') === 'open') {
+            isTransitioning = true;
             aboutSection.setAttribute('data-state', 'closed');
             aboutSection.classList.remove('show');
             aboutSection.classList.add('hide');
+
+            // Block link clicks during fade out
+            aboutLink.style.pointerEvents = 'none';
+
             setTimeout(() => {
                 aboutSection.style.display = 'none';
                 aboutSection.className = 'content-section';
-            }, 800);
+                isTransitioning = false;
+                aboutLink.style.pointerEvents = 'auto';
+            }, 900); // Slightly longer than animation to be safe
         }
     });
 
@@ -236,14 +266,23 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        if (isTransitioning) return;
+
         if (contactSection.getAttribute('data-state') === 'open') {
+            isTransitioning = true;
             contactSection.setAttribute('data-state', 'closed');
             contactSection.classList.remove('show');
             contactSection.classList.add('hide');
+
+            // Block link clicks during fade out
+            contactLink.style.pointerEvents = 'none';
+
             setTimeout(() => {
                 contactSection.style.display = 'none';
                 contactSection.className = 'content-section';
-            }, 800);
+                isTransitioning = false;
+                contactLink.style.pointerEvents = 'auto';
+            }, 900); // Slightly longer than animation to be safe
         }
     });
 
