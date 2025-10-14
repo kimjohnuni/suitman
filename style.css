@@ -122,6 +122,7 @@ html, body {
     z-index: 1000;
     text-align: left;
     pointer-events: auto;
+    background: rgba(0, 0, 0, 0.01); /* Invisible but blocks click-through */
 }
 
 .content-section.show,
@@ -357,7 +358,7 @@ html, body {
 
 
     .test {
-    color: red;  /* CHANGE THIS COLOR */
+    color: yellow;  /* CHANGE THIS COLOR */
     text-decoration: none;
     transition: color 2s ease-in-out;
     display: block;

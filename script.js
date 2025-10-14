@@ -1,216 +1,102 @@
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded');
+// Wait for DOM to load
+document.addEventListener("DOMContentLoaded", () => {
+  const contentSections = document.querySelectorAll(".content-section");
+  let currentOpenSection = null;
 
-    const logoContainer = document.querySelector('.logo-container');
-    const navContainer = document.querySelector('.nav-container');
+  // -----------------------------
+  // Section Toggle Functions
+  // -----------------------------
 
-    let slides;
-    let currentSlide = 0;
-    const slideInterval = 6000;
+  function openContentSection(section) {
+    section.style.display = "block";
+    section.classList.add("show");
+    currentOpenSection = section;
+  }
 
-    function loadResponsiveImages() {
-        const isMobile = window.innerWidth <= 768;
+  function closeContentSection(section) {
+    section.classList.remove("show");
+    // Wait for fade-out to complete
+    setTimeout(() => {
+      section.style.display = "none";
+      if (currentOpenSection === section) {
+        currentOpenSection = null;
+      }
+    }, 300);
+  }
 
-        if (isMobile) {
-            slides = document.querySelectorAll('.mobile-slide');
-            slides.forEach(slide => {
-                const mobileImg = slide.getAttribute('data-mobile');
-                slide.style.backgroundImage = `url('${mobileImg}')`;
-            });
-        } else {
-            slides = document.querySelectorAll('.desktop-slide');
-            slides.forEach(slide => {
-                const desktopImg = slide.getAttribute('data-desktop');
-                slide.style.backgroundImage = `url('${desktopImg}')`;
-            });
-        }
+  function toggleContentSection(id) {
+    const section = document.getElementById(id);
+    if (!section) return;
 
-        console.log('Loaded', slides.length, isMobile ? 'mobile' : 'desktop', 'slides');
-        resetSlideshow();
+    // If this section is already open → close it
+    if (section.classList.contains("show")) {
+      closeContentSection(section);
+      return;
     }
 
-    const desktopLogoSettings = [
-        false, true, false, true, true, true, false, false, true, true, false
-    ];
-
-    const mobileLogoSettings = [
-        true, true, true, false, true, false
-    ];
-
-    function updateLogo() {
-        if (!logoContainer || !navContainer) {
-            console.warn('Logo or nav container missing');
-            return;
-        }
-
-        logoContainer.classList.remove('bright-background', 'dark-background');
-        navContainer.classList.remove('bright-background', 'dark-background');
-
-        const isMobile = window.innerWidth <= 768;
-        const logoSettings = isMobile ? mobileLogoSettings : desktopLogoSettings;
-
-        if (logoSettings[currentSlide]) {
-            logoContainer.classList.add('bright-background');
-            navContainer.classList.add('bright-background');
-            console.log('Set to bright background (black logo)');
-        } else {
-            logoContainer.classList.add('dark-background');
-            navContainer.classList.add('dark-background');
-            console.log('Set to dark background (white logo)');
-        }
+    // Close any other open section
+    if (currentOpenSection && currentOpenSection !== section) {
+      closeContentSection(currentOpenSection);
     }
 
-    function showNextSlide() {
-        if (!slides || slides.length === 0) return;
+    // Open the selected section
+    openContentSection(section);
+  }
 
-        console.log('Changing slide from', currentSlide, 'to', (currentSlide + 1) % slides.length);
+  // -----------------------------
+  // Handle Clicks on Links
+  // -----------------------------
 
-        slides[currentSlide].classList.remove('active');
-        currentSlide = (currentSlide + 1) % slides.length;
-        slides[currentSlide].classList.add('active');
-        updateLogo();
+  document.addEventListener("click", (e) => {
+    const href = e.target.getAttribute("href");
+
+    // If clicking outside nav links, ignore
+    if (!href) return;
+
+    // If a section is open and user clicks a nav link, just close it
+    if (currentOpenSection && (href === "#about" || href === "#contact")) {
+      e.preventDefault();
+      e.stopPropagation();
+      closeContentSection(currentOpenSection);
+      return;
     }
 
-    function resetSlideshow() {
-        document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
-        currentSlide = 0;
-        if (slides && slides.length > 0) {
-            slides[0].classList.add('active');
-            updateLogo();
-        }
+    // Otherwise handle toggling
+    if (href === "#about" || href === "#contact") {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleContentSection(href.substring(1)); // remove '#' from id
     }
+  });
 
-    let intervalId;
+  // -----------------------------
+  // Close Section on Section Click
+  // -----------------------------
+  contentSections.forEach((section) => {
+    section.addEventListener("click", (e) => {
+      // Prevent inner elements (like buttons) from triggering close
+      if (e.target.closest(".inner-content, .copy-btn")) return;
 
-    function startSlideshow() {
-        if (intervalId) clearInterval(intervalId);
-        intervalId = setInterval(showNextSlide, slideInterval);
-        console.log('Slideshow started with interval:', intervalId);
-    }
-
-    loadResponsiveImages();
-    startSlideshow();
-
-    let resizeTimer;
-    window.addEventListener('resize', function() {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(function() {
-            const newWidth = window.innerWidth;
-            const wasMobile = slides && slides[0] && slides[0].classList.contains('mobile-slide');
-            const nowMobile = newWidth <= 768;
-
-            if (wasMobile !== nowMobile) {
-                console.log('Screen size changed, reloading images');
-                loadResponsiveImages();
-                startSlideshow();
-            }
-        }, 250);
+      if (currentOpenSection === section) {
+        closeContentSection(section);
+      }
     });
+  });
 
-    // Content section handling - SIMPLIFIED APPROACH
-    const contentSections = document.querySelectorAll('.content-section');
-    let currentOpenSection = null;
-
-    // Show content sections with smooth animation
-    document.addEventListener('click', function(e) {
-        const href = e.target.getAttribute('href');
-
-        if (href === '#about') {
-            e.preventDefault();
-            e.stopPropagation();
-            toggleContentSection('about');
-        }
-
-        if (href === '#contact') {
-            e.preventDefault();
-            e.stopPropagation();
-            toggleContentSection('contact');
-        }
-    });
-
-    // Single toggle function that handles both open and close
-    function toggleContentSection(sectionId) {
-        const section = document.getElementById(sectionId);
-        if (!section) return;
-
-        // If this section is currently open, close it
-        if (currentOpenSection === section) {
-            closeContentSection(section);
-            return;
-        }
-
-        // If another section is open, close it first
-        if (currentOpenSection && currentOpenSection !== section) {
-            closeContentSection(currentOpenSection);
-        }
-
-        // Open the new section
-        openContentSection(section);
-    }
-
-    function openContentSection(section) {
-        // Force complete reset of all animation states
-        section.style.display = 'none';
-        section.classList.remove('show', 'hide', 'crossfade');
-        section.offsetHeight; // Force reflow
-
-        // Now show it
-        section.style.display = 'block';
-        section.offsetHeight; // Force reflow
-        section.classList.add('show');
-        currentOpenSection = section;
-        console.log(section.id + ' section opened');
-    }
-
-    function closeContentSection(section) {
-        section.classList.remove('show');
-        section.classList.add('hide');
-
+  // -----------------------------
+  // Copy Email to Clipboard
+  // -----------------------------
+  const copyBtn = document.getElementById("copy-btn");
+  if (copyBtn) {
+    copyBtn.addEventListener("click", () => {
+      const email = copyBtn.getAttribute("data-email");
+      navigator.clipboard.writeText(email).then(() => {
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = "Copied!";
         setTimeout(() => {
-            section.style.display = 'none';
-            section.classList.remove('hide', 'crossfade');
-            if (currentOpenSection === section) {
-                currentOpenSection = null;
-            }
-            console.log(section.id + ' section closed');
-        }, 800);
-    }
-
-    // Close on click anywhere in the section EXCEPT email link and copy button
-    contentSections.forEach(section => {
-        section.addEventListener('click', function(e) {
-            // Don't close if clicking email link or copy button
-            if (e.target.id === 'emailLink' ||
-                e.target.id === 'copyBtn' ||
-                e.target.closest('#copyBtn') ||
-                e.target.closest('#emailLink')) {
-                return;
-            }
-
-            // Only close if this section is actually the current open one
-            if (currentOpenSection === section) {
-                closeContentSection(section);
-            }
-        });
+          copyBtn.textContent = originalText;
+        }, 1500);
+      });
     });
-
-    // Copy email functionality
-    const copyBtn = document.getElementById('copyBtn');
-    if (copyBtn) {
-        copyBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const email = 'info@suitman.org';
-            navigator.clipboard.writeText(email).then(() => {
-                copyBtn.textContent = '✓';
-                console.log('Email copied to clipboard');
-                setTimeout(() => {
-                    copyBtn.textContent = '⧉';
-                }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy:', err);
-            });
-        });
-    }
+  }
 });
-
-console.log('Script loaded');
