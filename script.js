@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 250);
     });
 
-    // ========== MOBILE LOGIC ==========
+    // ========== CONTENT SECTIONS WITH CROSSFADE ==========
     const aboutSection = document.getElementById('about');
     const contactSection = document.getElementById('contact');
     const aboutLink = document.querySelector('a[href="#about"]');
@@ -115,24 +115,39 @@ document.addEventListener('DOMContentLoaded', function() {
     aboutLink.addEventListener('click', function(e) {
         e.preventDefault();
 
-        const currentState = aboutSection.getAttribute('data-state');
+        const aboutState = aboutSection.getAttribute('data-state');
+        const contactState = contactSection.getAttribute('data-state');
 
-        if (currentState === 'closed') {
-            // Close contact first if open
-            if (contactSection.getAttribute('data-state') === 'open') {
+        if (aboutState === 'closed') {
+            // Check if contact is open for crossfade
+            if (contactState === 'open') {
+                // CROSSFADE: Contact to About
                 contactSection.setAttribute('data-state', 'closed');
-                contactSection.style.display = 'none';
-                contactSection.className = 'content-section';
+                contactSection.classList.remove('show');
+                contactSection.classList.add('hide');
+
+                // Open about immediately (crossfade effect)
+                aboutSection.setAttribute('data-state', 'open');
+                aboutSection.className = 'content-section crossfade';
+                aboutSection.style.display = 'block';
+                setTimeout(() => {
+                    aboutSection.classList.add('show');
+                }, 10);
+
+                // Clean up contact after transition
+                setTimeout(() => {
+                    contactSection.style.display = 'none';
+                    contactSection.className = 'content-section';
+                }, 800);
+            } else {
+                // Normal open
+                aboutSection.setAttribute('data-state', 'open');
+                aboutSection.className = 'content-section';
+                aboutSection.style.display = 'block';
+                setTimeout(() => {
+                    aboutSection.classList.add('show');
+                }, 10);
             }
-
-            // Open about
-            aboutSection.setAttribute('data-state', 'open');
-            aboutSection.className = 'content-section';
-            aboutSection.style.display = 'block';
-            setTimeout(() => {
-                aboutSection.classList.add('show');
-            }, 10);
-
         } else {
             // Close about
             aboutSection.setAttribute('data-state', 'closed');
@@ -149,24 +164,39 @@ document.addEventListener('DOMContentLoaded', function() {
     contactLink.addEventListener('click', function(e) {
         e.preventDefault();
 
-        const currentState = contactSection.getAttribute('data-state');
+        const aboutState = aboutSection.getAttribute('data-state');
+        const contactState = contactSection.getAttribute('data-state');
 
-        if (currentState === 'closed') {
-            // Close about first if open
-            if (aboutSection.getAttribute('data-state') === 'open') {
+        if (contactState === 'closed') {
+            // Check if about is open for crossfade
+            if (aboutState === 'open') {
+                // CROSSFADE: About to Contact
                 aboutSection.setAttribute('data-state', 'closed');
-                aboutSection.style.display = 'none';
-                aboutSection.className = 'content-section';
+                aboutSection.classList.remove('show');
+                aboutSection.classList.add('hide');
+
+                // Open contact immediately (crossfade effect)
+                contactSection.setAttribute('data-state', 'open');
+                contactSection.className = 'content-section crossfade';
+                contactSection.style.display = 'block';
+                setTimeout(() => {
+                    contactSection.classList.add('show');
+                }, 10);
+
+                // Clean up about after transition
+                setTimeout(() => {
+                    aboutSection.style.display = 'none';
+                    aboutSection.className = 'content-section';
+                }, 800);
+            } else {
+                // Normal open
+                contactSection.setAttribute('data-state', 'open');
+                contactSection.className = 'content-section';
+                contactSection.style.display = 'block';
+                setTimeout(() => {
+                    contactSection.classList.add('show');
+                }, 10);
             }
-
-            // Open contact
-            contactSection.setAttribute('data-state', 'open');
-            contactSection.className = 'content-section';
-            contactSection.style.display = 'block';
-            setTimeout(() => {
-                contactSection.classList.add('show');
-            }, 10);
-
         } else {
             // Close contact
             contactSection.setAttribute('data-state', 'closed');
@@ -179,39 +209,41 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // CLOSE ON BACKGROUND CLICK - ABOUT
+    // CLOSE ON CLICK - ABOUT
     aboutSection.addEventListener('click', function(e) {
-        // Only close if clicking directly on the scrollable-area (the background), not the content
-        if (e.target.classList.contains('scrollable-area') ||
-            e.target.classList.contains('content-section')) {
+        // Don't close if clicking on email link or copy button
+        if (e.target.id === 'emailLink' || e.target.id === 'copyBtn' ||
+            e.target.closest('#copyBtn') || e.target.closest('#emailLink')) {
+            return;
+        }
 
-            if (aboutSection.getAttribute('data-state') === 'open') {
-                aboutSection.setAttribute('data-state', 'closed');
-                aboutSection.classList.remove('show');
-                aboutSection.classList.add('hide');
-                setTimeout(() => {
-                    aboutSection.style.display = 'none';
-                    aboutSection.className = 'content-section';
-                }, 800);
-            }
+        if (aboutSection.getAttribute('data-state') === 'open') {
+            aboutSection.setAttribute('data-state', 'closed');
+            aboutSection.classList.remove('show');
+            aboutSection.classList.add('hide');
+            setTimeout(() => {
+                aboutSection.style.display = 'none';
+                aboutSection.className = 'content-section';
+            }, 800);
         }
     });
 
-    // CLOSE ON BACKGROUND CLICK - CONTACT
+    // CLOSE ON CLICK - CONTACT
     contactSection.addEventListener('click', function(e) {
-        // Only close if clicking directly on the scrollable-area (the background), not the content
-        if (e.target.classList.contains('scrollable-area') ||
-            e.target.classList.contains('content-section')) {
+        // Don't close if clicking on email link or copy button
+        if (e.target.id === 'emailLink' || e.target.id === 'copyBtn' ||
+            e.target.closest('#copyBtn') || e.target.closest('#emailLink')) {
+            return;
+        }
 
-            if (contactSection.getAttribute('data-state') === 'open') {
-                contactSection.setAttribute('data-state', 'closed');
-                contactSection.classList.remove('show');
-                contactSection.classList.add('hide');
-                setTimeout(() => {
-                    contactSection.style.display = 'none';
-                    contactSection.className = 'content-section';
-                }, 800);
-            }
+        if (contactSection.getAttribute('data-state') === 'open') {
+            contactSection.setAttribute('data-state', 'closed');
+            contactSection.classList.remove('show');
+            contactSection.classList.add('hide');
+            setTimeout(() => {
+                contactSection.style.display = 'none';
+                contactSection.className = 'content-section';
+            }, 800);
         }
     });
 
