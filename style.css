@@ -5,9 +5,10 @@
     box-sizing: border-box;
 }
 
-body, html {
+html, body {
     height: 100%;
     overflow-x: hidden;
+    overflow: hidden;
     font-family: 'Roboto', 'Roboto Condensed', Arial, sans-serif;
 }
 
@@ -16,10 +17,21 @@ body, html {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     z-index: 0;
 }
+
+/* Right/left arrow cursors */
+.slideshow-container.right-cursor {
+    cursor: url('data:image/svg+xml;utf8,<svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 18L15 12L9 6" stroke="%23FFD600" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>') 36 24, pointer;
+}
+.slideshow-container.left-cursor {
+    cursor: url('data:image/svg+xml;utf8,<svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 18L9 12L15 6" stroke="%23FFD600" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>') 12 24, pointer;
+}
+
+/* Prevent logo from intercepting pointer events (diagnosis only) */
+.logo-container { pointer-events: none !important; }
 
 .slide {
     position: absolute;
@@ -38,11 +50,13 @@ body, html {
 }
 
 /* Show desktop images by default, hide mobile */
-.desktop-slide {
-    display: block;
-}
-.mobile-slide {
-    display: none;
+.desktop-slide { display: block; }
+.mobile-slide  { display: none; }
+
+/* Yellow dot cursor for menu item hovers */
+.menu-item a:hover {
+    opacity: 0.7;
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="9" fill="%23FFD600"/></svg>') 13 13, pointer;
 }
 
 .logo-container {
@@ -50,7 +64,7 @@ body, html {
     top: 80px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 1100; /* Above content sections */
+    z-index: 1100;
     width: 80px;
     height: 32px;
 }
@@ -74,7 +88,7 @@ body, html {
     top: 200px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 1100; /* Above content sections */
+    z-index: 1100;
     display: flex;
     align-items: center;
     gap: 15px;
@@ -92,13 +106,10 @@ body, html {
     display: block;
     cursor: pointer;
 }
-.menu-item a:hover {
-    opacity: 0.7;
-}
+
 .bright-background .menu-item a { color: black; }
 .dark-background .menu-item a { color: white; }
 
-/* Content sections (about/contact overlays) */
 .content-section {
     position: fixed;
     top: 0;
@@ -110,7 +121,7 @@ body, html {
     display: none;
     z-index: 1000;
     text-align: left;
-    pointer-events: auto; /* Allow clicks everywhere on the overlay */
+    pointer-events: auto;
 }
 
 .content-section.show,
@@ -118,20 +129,10 @@ body, html {
     display: block;
 }
 
-/* Z-index management for crossfade */
-.content-section.show {
-    z-index: 1000;
-}
+.content-section.show { z-index: 1000; }
+.content-section.hide { z-index: 999; }
+.content-section.show.crossfade { z-index: 1001; }
 
-.content-section.hide {
-    z-index: 999; /* Lower z-index so new section appears on top */
-}
-
-.content-section.show.crossfade {
-    z-index: 1001; /* New section on top during crossfade */
-}
-
-/* Overlay: FADE IN ONLY (no sliding) */
 .content-section .scrollable-area {
     position: absolute;
     bottom: 0;
@@ -166,43 +167,33 @@ body, html {
     );
     pointer-events: auto;
 }
-
 .content-section.show .scrollable-area {
     animation: fadeInGradient 0.8s cubic-bezier(0.25,0.46,0.45,0.94) forwards;
 }
-
 @keyframes fadeInGradient {
     from { opacity: 0; }
     to { opacity: 1; }
 }
 
-/* Fade out scrollable area when hiding */
 .content-section.hide .scrollable-area {
     animation: fadeOutGradient 0.8s cubic-bezier(0.25,0.46,0.45,0.94) forwards;
 }
-
 @keyframes fadeOutGradient {
     from { opacity: 1; }
     to { opacity: 0; }
 }
-
-/* Crossfade: instant fade with no delay */
 .content-section.crossfade .scrollable-area {
     animation: fadeInGradient 0.8s cubic-bezier(0.25,0.46,0.45,0.94) forwards;
     animation-delay: 0s !important;
 }
-
-/* Fade out entire section */
 @keyframes fadeOutSection {
     from { opacity: 1; }
     to { opacity: 0; }
 }
-
 .content-section.hide {
     animation: fadeOutSection 0.8s cubic-bezier(0.25,0.46,0.45,0.94) forwards;
 }
 
-/* Content inside scrollable area: fade in after overlay */
 .content-section .scrollable-content {
     max-width: 800px;
     margin: 0 auto;
@@ -212,29 +203,22 @@ body, html {
     animation: fadeInText 0.6s cubic-bezier(0.25,0.46,0.45,0.94) forwards;
     animation-delay: 0.8s;
 }
-
 .content-section.show .scrollable-content {
     animation: fadeInText 0.6s cubic-bezier(0.25,0.46,0.45,0.94) forwards;
     animation-delay: 0.8s;
 }
-
-/* Crossfade: instant content fade with no delay */
 .content-section.crossfade .scrollable-content {
     animation: fadeInText 0.8s cubic-bezier(0.25,0.46,0.45,0.94) forwards;
     animation-delay: 0s !important;
-    opacity: 1; /* Start visible immediately */
+    opacity: 1;
 }
-
-/* Fade out content when hiding */
 .content-section.hide .scrollable-content {
     animation: fadeOutText 0.8s cubic-bezier(0.25,0.46,0.45,0.94) forwards;
 }
-
 @keyframes fadeInText {
     from { opacity: 0; }
     to { opacity: 1; }
 }
-
 @keyframes fadeOutText {
     from { opacity: 1; }
     to { opacity: 0; }
@@ -246,55 +230,33 @@ body, html {
     margin-bottom: 30px;
     color: white;
 }
-
 .content-section h2 {
     font-family: 'Roboto Condensed', Arial, sans-serif;
     font-size: 2rem;
     margin: 40px 0 20px;
     color: white;
 }
-
 .content-section p {
     font-size: 1.1rem;
     margin-bottom: 20px;
     color: rgba(255, 255, 255, 0.9);
 }
-
-/* ABOUT section: bigger copy with bottom padding */
-#about .scrollable-content {
-    padding-bottom: 100px;
-}
-
-#about .scrollable-content h1 {
-    font-size: 3.5rem;
-}
-
-#about .scrollable-content h2 {
-    font-size: 2.5rem;
-}
-
+#about .scrollable-content { padding-bottom: 150px; }
+#about .scrollable-content h1 { font-size: 3.5rem; }
+#about .scrollable-content h2 { font-size: 2.5rem; }
 #about .scrollable-content p {
     font-size: 1.5rem;
     line-height: 1.8;
     margin-bottom: 28px;
     font-family: 'Roboto', Arial, sans-serif;
 }
-
-#about .scrollable-content p:last-child {
-    margin-bottom: 0;
-}
-
-/* CONTACT: stylize email link and heading */
-#contact .scrollable-content h1 {
-    font-size: 3.5rem;
-}
-
+#about .scrollable-content p:last-child { margin-bottom: 0; }
+#contact .scrollable-content h1 { font-size: 3.5rem; }
 #contact .scrollable-content p {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
 }
-
 #contact .scrollable-content p,
 #contact .scrollable-content a {
     font-size: 1.5rem;
@@ -303,13 +265,10 @@ body, html {
     text-decoration: none;
     margin-bottom: 0;
 }
-
 #contact .scrollable-content a:hover {
     opacity: 0.8;
     text-decoration: none;
 }
-
-/* Copy button styling */
 .copy-btn {
     margin-left: 15px;
     background: transparent;
@@ -322,131 +281,156 @@ body, html {
     vertical-align: middle;
     outline: none;
 }
-
 .copy-btn:hover {
     background: transparent;
     opacity: 0.8;
     transform: none;
 }
-
-.copy-btn:active {
-    transform: none;
-}
-
-/* Custom scrollbar for the scrollable area */
-.scrollable-area::-webkit-scrollbar {
-    width: 8px;
-}
-
+.copy-btn:active { transform: none; }
+.scrollable-area::-webkit-scrollbar { width: 8px; }
 .scrollable-area::-webkit-scrollbar-track {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 4px;
 }
-
 .scrollable-area::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.3);
     border-radius: 4px;
 }
-
 .scrollable-area::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.5);
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
-    /* On mobile: hide desktop, show mobile */
-    .desktop-slide {
-        display: none;
-    }
-    .mobile-slide {
-        display: block;
+    .desktop-slide { display: none; }
+    .mobile-slide  { display: block; }
+    .logo-container { top: 20px; width: 100px; height: 40px; }
+    .nav-container { top: 85px; gap: 12px; }
+    .menu-item { font-size: 16px; }
+
+    .scrollable-area {
+        position: absolute;
+        top: 120px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: auto;
+        padding: 15px 20px 0px;
+        overflow-y: auto;
+        background: linear-gradient(
+            to top,
+            rgba(0, 0, 0, 1) 0%,
+            rgba(0, 0, 0, 0.95) 20%,
+            rgba(0, 0, 0, 0.8) 40%,
+            rgba(0, 0, 0, 0.6) 60%,
+            rgba(0, 0, 0, 0.4) 80%,
+            rgba(0, 0, 0, 0) 100%
+        );
+        --fadeSize: 54px;
+        -webkit-mask-image: linear-gradient(
+            to bottom,
+            transparent 0px,
+            black var(--fadeSize),
+            black 100%
+        );
+        mask-image: linear-gradient(
+            to bottom,
+            transparent 0px,
+            black var(--fadeSize),
+            black 100%
+        );
+        pointer-events: auto;
     }
 
-    .logo-container {
-        top: 20px;
-        width: 100px;
-        height: 40px;
-    }
-    .nav-container {
-        top: 85px;
-        gap: 12px;
-    }
-    .menu-item {
-        font-size: 16px;
-    }
-    .scrollable-area {
-        height: calc(100vh - 200px);
-        padding: 40px 20px 0px;
-    }
     .content-section h1,
     #about .scrollable-content h1,
-    #contact .scrollable-content h1 {
-        font-size: 2.5rem;
-    }
+    #contact .scrollable-content h1 { font-size: 2.5rem; }
     .content-section h2,
-    #about .scrollable-content h2 {
-        font-size: 1.9rem;
-    }
+    #about .scrollable-content h2 { font-size: 1.9rem; }
     .content-section p,
     #about .scrollable-content p,
     #contact .scrollable-content p,
-    #contact .scrollable-content a {
-        font-size: 1.15rem;
-    }
-    .copy-btn {
-        font-size: 1rem;
-        padding: 0;
-    }
+    #contact .scrollable-content a { font-size: 1.15rem; }
+    .copy-btn { font-size: 1rem; padding: 0; }
 }
 
 @media (max-width: 480px) {
-  .logo-container {
-    top: 15px !important;
-    width: 80px;
-    height: 32px;
-  }
+    .logo-container { top: 15px !important; width: 80px; height: 32px; }
+    .nav-container { top: 135px !important; gap: 10px; }
+    .menu-item { font-size: 18px; }
 
-  .nav-container {
-    top: 135px !important;
-    gap: 10px;
-  }
+    .scrollable-area {
+        position: absolute;
+        top: 165px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: auto;
+        padding: 10px 15px 0px;
+        overflow-y: auto;
+        background: linear-gradient(
+            to top,
+            rgba(0, 0, 0, 1) 0%,
+            rgba(0, 0, 0, 0.95) 20%,
+            rgba(0, 0, 0, 0.8) 40%,
+            rgba(0, 0, 0, 0.6) 60%,
+            rgba(0, 0, 0, 0.4) 80%,
+            rgba(0, 0, 0, 0) 100%
+        );
+        --fadeSize: 54px;
+        -webkit-mask-image: linear-gradient(
+            to bottom,
+            transparent 0px,
+            black var(--fadeSize),
+            black 100%
+        );
+        mask-image: linear-gradient(
+            to bottom,
+            transparent 0px,
+            black var(--fadeSize),
+            black 100%
+        );
+        pointer-events: auto;
+    }
 
-  .menu-item {
-    font-size: 18px;
-  }
+    .content-section h1,
+    #about .scrollable-content h1,
+    #contact .scrollable-content h1 { font-size: 2rem; }
+    .content-section h2,
+    #about .scrollable-content h2 { font-size: 1.4rem; }
+    #about .scrollable-content { padding-bottom: 220px; }
+    .content-section p,
+    #about .scrollable-content p,
+    #contact .scrollable-content p,
+    #contact .scrollable-content a { font-size: 1.15rem; }
+    .copy-btn { font-size: 1rem; padding: 0; }
 
-  .scrollable-area {
-    height: calc(100vh - 150px);
-    padding: 30px 15px 0px;
-  }
 
-  .content-section h1,
-  #about .scrollable-content h1,
-  #contact .scrollable-content h1 {
-    font-size: 2rem;
-  }
+    .content-section .scrollable-area {
+        height: calc(100vh - 160px);
+      }
 
-  .content-section h2,
-  #about .scrollable-content h2 {
-    font-size: 1.4rem;
-  }
-
-  #about .scrollable-content {
-    padding-bottom: 60px;
-  }
-
-  .content-section p,
-  #about .scrollable-content p,
-  #contact .scrollable-content p,
-  #contact .scrollable-content a {
-    font-size: 1.15rem;
-  }
-
-  .copy-btn {
-    font-size: 1rem;
-    padding: 0;
-  }
+      .content-section h1 {
+          margin-bottom: 0px;
+      }
 }
+
+
+
+
+/* Make sure base html/body don’t have extra margin/padding */
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100%;
+    width: 100%;
+}
+
+
+
+
+
+
+
 
 /* Hide scrollbars */
 body::-webkit-scrollbar { display: none; }

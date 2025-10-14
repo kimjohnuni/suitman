@@ -150,14 +150,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Show content sections with smooth animation
     document.addEventListener('click', function(e) {
         const href = e.target.getAttribute('href');
+        const isMobile = window.innerWidth <= 768;
 
         if (href === '#about') {
             e.preventDefault();
+            if (isMobile) {
+                e.stopPropagation(); // Only stop propagation on mobile
+            }
             showContentSection('about');
         }
 
         if (href === '#contact') {
             e.preventDefault();
+            if (isMobile) {
+                e.stopPropagation(); // Only stop propagation on mobile
+            }
             showContentSection('contact');
         }
     });
