@@ -301,125 +301,124 @@ html, body {
     background: rgba(255, 255, 255, 0.5);
 }
 
+/* Tablet and down */
 @media (max-width: 768px) {
-    .desktop-slide { display: none; }
-    .mobile-slide  { display: block; }
-    .logo-container { top: 20px; width: 100px; height: 40px; }
-    .nav-container { top: 85px; gap: 12px; }
-    .menu-item { font-size: 16px; }
+  /* Slides */
+  .desktop-slide { display: none; }
+  .mobile-slide  { display: block; }
 
-    .scrollable-area {
-        position: absolute;
-        top: 120px;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: auto;
-        padding: 15px 20px 0px;
-        overflow-y: auto;
-        background: linear-gradient(
-            to top,
-            rgba(0, 0, 0, 1) 0%,
-            rgba(0, 0, 0, 0.95) 20%,
-            rgba(0, 0, 0, 0.8) 40%,
-            rgba(0, 0, 0, 0.6) 60%,
-            rgba(0, 0, 0, 0.4) 80%,
-            rgba(0, 0, 0, 0) 100%
-        );
-        --fadeSize: 54px;
-        -webkit-mask-image: linear-gradient(
-            to bottom,
-            transparent 0px,
-            black var(--fadeSize),
-            black 100%
-        );
-        mask-image: linear-gradient(
-            to bottom,
-            transparent 0px,
-            black var(--fadeSize),
-            black 100%
-        );
-        pointer-events: auto;
-    }
+  /* Logo/Nav */
+  .logo-container { top: 20px; width: 100px; height: 40px; }
+  .nav-container { top: 85px; gap: 12px; }
+  .menu-item { font-size: 16px; }
 
-    .content-section h1,
-    #about .scrollable-content h1,
-    #contact .scrollable-content h1 { font-size: 2.5rem; }
-    .content-section h2,
-    #about .scrollable-content h2 { font-size: 1.9rem; }
-    .content-section p,
-    #about .scrollable-content p,
-    #contact .scrollable-content p,
-    #contact .scrollable-content a { font-size: 1.15rem; }
-    .copy-btn { font-size: 1rem; padding: 0; }
+  /* Overlay scroll area */
+  .scrollable-area {
+    position: absolute;
+    top: 120px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: auto;
+    padding: 15px 20px 0px;
+    overflow-y: auto;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 1) 0%,
+      rgba(0, 0, 0, 0.95) 20%,
+      rgba(0, 0, 0, 0.8) 40%,
+      rgba(0, 0, 0, 0.6) 60%,
+      rgba(0, 0, 0, 0.4) 80%,
+      rgba(0, 0, 0, 0) 100%
+    );
+    --fadeSize: 54px;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0px, black var(--fadeSize), black 100%);
+    mask-image: linear-gradient(to bottom, transparent 0px, black var(--fadeSize), black 100%);
+    pointer-events: auto;
+  }
 
+  /* Type sizes */
+  .content-section h1,
+  #about .scrollable-content h1,
+  #contact .scrollable-content h1 { font-size: 2.5rem; }
 
+  .content-section h2,
+  #about .scrollable-content h2 { font-size: 1.9rem; }
 
+  .content-section p,
+  #about .scrollable-content p,
+  #contact .scrollable-content p,
+  #contact .scrollable-content a { font-size: 1.15rem; }
 
-
-  
+  .copy-btn { font-size: 1rem; padding: 0; }
 }
 
+/* Phones and small devices */
 @media (max-width: 480px) {
-    .logo-container { top: 15px !important; width: 80px; height: 32px; }
-    .nav-container { top: 135px !important; gap: 10px; }
-    .menu-item { font-size: 18px; }
+  /* Logo/Nav */
+  .logo-container { top: 15px !important; width: 80px; height: 32px; }
+  .nav-container { top: 135px !important; gap: 10px; }
+  .menu-item { font-size: 18px; }
 
-    .scrollable-area {
-        position: absolute;
-        top: 165px;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: auto;
-        padding: 10px 15px 0px;
-        overflow-y: auto;
-        background: linear-gradient(
-            to top,
-            rgba(0, 0, 0, 1) 0%,
-            rgba(0, 0, 0, 0.95) 20%,
-            rgba(0, 0, 0, 0.8) 40%,
-            rgba(0, 0, 0, 0.6) 60%,
-            rgba(0, 0, 0, 0.4) 80%,
-            rgba(0, 0, 0, 0) 100%
-        );
-        --fadeSize: 54px;
-        -webkit-mask-image: linear-gradient(
-            to bottom,
-            transparent 0px,
-            black var(--fadeSize),
-            black 100%
-        );
-        mask-image: linear-gradient(
-            to bottom,
-            transparent 0px,
-            black var(--fadeSize),
-            black 100%
-        );
-        pointer-events: auto;
-    }
+  /* Overlay scroll area */
+  .scrollable-area {
+    position: absolute;
+    top: 165px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: auto;
+    padding: 10px 15px 0px;
+    overflow-y: auto;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 1) 0%,
+      rgba(0, 0, 0, 0.95) 20%,
+      rgba(0, 0, 0, 0.8) 40%,
+      rgba(0, 0, 0, 0.6) 60%,
+      rgba(0, 0, 0, 0.4) 80%,
+      rgba(0, 0, 0, 0) 100%
+    );
+    --fadeSize: 54px;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0px, black var(--fadeSize), black 100%);
+    mask-image: linear-gradient(to bottom, transparent 0px, black var(--fadeSize), black 100%);
+    pointer-events: auto;
+  }
 
-    .content-section h1,
-    #about .scrollable-content h1,
-    #contact .scrollable-content h1 { font-size: 2rem; }
-    .content-section h2,
-    #about .scrollable-content h2 { font-size: 1.4rem; }
-    #about .scrollable-content { padding-bottom: 220px; }
-    .content-section p,
-    #about .scrollable-content p,
-    #contact .scrollable-content p,
-    #contact .scrollable-content a { font-size: 1.15rem; }
-    .copy-btn { font-size: 1rem; padding: 0; }
+  /* Optional fixed-height variant for very small viewports */
+  .content-section .scrollable-area {
+    height: calc(100vh - 160px);
+  }
 
+  /* Type and spacing */
+  .content-section h1,
+  #about .scrollable-content h1,
+  #contact .scrollable-content h1 { font-size: 2rem; }
 
-    .content-section .scrollable-area {
-        height: calc(100vh - 160px);
-      }
+  .content-section h2,
+  #about .scrollable-content h2 { font-size: 1.4rem; }
 
-      .content-section h1 {
-          margin-bottom: 0px;
-      }
+  #about .scrollable-content { padding-bottom: 220px; }
+
+  .content-section p,
+  #about .scrollable-content p,
+  #contact .scrollable-content p,
+  #contact .scrollable-content a { font-size: 1.15rem; }
+
+  .copy-btn { font-size: 1rem; padding: 0; }
+
+  /* Tighten heading spacing on phones */
+  .content-section h1 { margin-bottom: 0px; }
 }
+
+/* Scope hover to real hover devices; use active for touch */
+@media (hover: hover) and (pointer: fine) {
+  .menu-item a:hover { opacity: 0.7; }
+}
+@media (hover: none) and (pointer: coarse) {
+  .menu-item a:active { opacity: 0.7; }
+}
+
 
 
 
