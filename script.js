@@ -298,17 +298,16 @@ function initMobile() {
     const aboutLink = document.querySelector('.mobile-link[href="#about"]');
     const contactLink = document.querySelector('.mobile-link[href="#contact"]');
 
+    // SIMPLE STATE TRACKING
+    let aboutState = 'closed'; // 'closed', 'open', 'closing'
+    let contactState = 'closed';
     let aboutCloseTimeout = null;
     let contactCloseTimeout = null;
 
-    // Check if section is open by checking DOM state
-    function isOpen(section) {
-        return section.style.display === 'block' && section.classList.contains('show');
-    }
-
     function openAbout() {
-        console.log('Opening about');
+        console.log('Opening about, current state:', aboutState);
 
+        // Clear any pending timeouts
         if (aboutCloseTimeout) {
             clearTimeout(aboutCloseTimeout);
             aboutCloseTimeout = null;
@@ -318,19 +317,23 @@ function initMobile() {
             contactCloseTimeout = null;
         }
 
+        // Close contact
         contactSection.style.display = 'none';
         contactSection.className = 'content-section';
         contactSection.style.pointerEvents = '';
+        contactState = 'closed';
 
+        // Open about
         aboutSection.style.display = 'block';
         aboutSection.style.pointerEvents = 'auto';
         aboutSection.className = 'content-section';
         void aboutSection.offsetHeight;
         aboutSection.classList.add('show');
+        aboutState = 'open';
     }
 
     function closeAbout() {
-        console.log('Closing about');
+        console.log('Closing about, current state:', aboutState);
 
         if (aboutCloseTimeout) {
             clearTimeout(aboutCloseTimeout);
@@ -339,17 +342,20 @@ function initMobile() {
         aboutSection.classList.remove('show');
         aboutSection.classList.add('hide');
         aboutSection.style.pointerEvents = 'none';
+        aboutState = 'closing';
 
         aboutCloseTimeout = setTimeout(() => {
             aboutSection.style.display = 'none';
             aboutSection.className = 'content-section';
             aboutSection.style.pointerEvents = '';
             aboutCloseTimeout = null;
+            aboutState = 'closed';
+            console.log('About close animation complete');
         }, 900);
     }
 
     function openContact() {
-        console.log('Opening contact');
+        console.log('Opening contact, current state:', contactState);
 
         if (aboutCloseTimeout) {
             clearTimeout(aboutCloseTimeout);
@@ -360,19 +366,23 @@ function initMobile() {
             contactCloseTimeout = null;
         }
 
+        // Close about
         aboutSection.style.display = 'none';
         aboutSection.className = 'content-section';
         aboutSection.style.pointerEvents = '';
+        aboutState = 'closed';
 
+        // Open contact
         contactSection.style.display = 'block';
         contactSection.style.pointerEvents = 'auto';
         contactSection.className = 'content-section';
         void contactSection.offsetHeight;
         contactSection.classList.add('show');
+        contactState = 'open';
     }
 
     function closeContact() {
-        console.log('Closing contact');
+        console.log('Closing contact, current state:', contactState);
 
         if (contactCloseTimeout) {
             clearTimeout(contactCloseTimeout);
@@ -381,22 +391,31 @@ function initMobile() {
         contactSection.classList.remove('show');
         contactSection.classList.add('hide');
         contactSection.style.pointerEvents = 'none';
+        contactState = 'closing';
 
         contactCloseTimeout = setTimeout(() => {
             contactSection.style.display = 'none';
             contactSection.className = 'content-section';
             contactSection.style.pointerEvents = '';
             contactCloseTimeout = null;
+            contactState = 'closed';
+            console.log('Contact close animation complete');
         }, 900);
     }
 
-    // Link handlers with TOGGLE logic
+    // Link handlers - use state variable
     aboutLink.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        console.log('About clicked, isOpen:', isOpen(aboutSection));
+        console.log('About clicked, state:', aboutState);
 
-        if (isOpen(aboutSection)) {
+        // Don't do anything if currently closing
+        if (aboutState === 'closing' || contactState === 'closing') {
+            console.log('Animation in progress, ignoring');
+            return;
+        }
+
+        if (aboutState === 'open') {
             closeAbout();
         } else {
             openAbout();
@@ -406,9 +425,15 @@ function initMobile() {
     contactLink.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        console.log('Contact clicked, isOpen:', isOpen(contactSection));
+        console.log('Contact clicked, state:', contactState);
 
-        if (isOpen(contactSection)) {
+        // Don't do anything if currently closing
+        if (aboutState === 'closing' || contactState === 'closing') {
+            console.log('Animation in progress, ignoring');
+            return;
+        }
+
+        if (contactState === 'open') {
             closeContact();
         } else {
             openContact();
@@ -426,8 +451,10 @@ function initMobile() {
             return;
         }
 
-        console.log('About section clicked - closing');
-        closeAbout();
+        console.log('About section clicked, state:', aboutState);
+        if (aboutState === 'open') {
+            closeAbout();
+        }
     });
 
     contactSection.addEventListener('click', function(e) {
@@ -440,8 +467,10 @@ function initMobile() {
             return;
         }
 
-        console.log('Contact section clicked - closing');
-        closeContact();
+        console.log('Contact section clicked, state:', contactState);
+        if (contactState === 'open') {
+            closeContact();
+        }
     });
 
     // Copy email
