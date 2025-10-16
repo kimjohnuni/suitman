@@ -298,170 +298,121 @@ function initMobile() {
     const aboutLink = document.querySelector('.mobile-link[href="#about"]');
     const contactLink = document.querySelector('.mobile-link[href="#contact"]');
 
-    let aboutOpen = false;
-    let contactOpen = false;
-    let lastInteractionTime = 0; // Prevent rapid-fire clicks
     let aboutCloseTimeout = null;
     let contactCloseTimeout = null;
 
     function openAbout() {
         console.log('Opening about');
-        if (aboutCloseTimeout) {
-            clearTimeout(aboutCloseTimeout);
-            aboutCloseTimeout = null;
-        }
 
-        if (contactOpen) {
-            if (contactCloseTimeout) clearTimeout(contactCloseTimeout);
-            contactSection.style.display = 'none';
-            contactSection.className = 'content-section';
-            contactOpen = false;
-        }
+        if (aboutCloseTimeout) clearTimeout(aboutCloseTimeout);
+        if (contactCloseTimeout) clearTimeout(contactCloseTimeout);
+
+        contactSection.style.display = 'none';
+        contactSection.className = 'content-section';
+        contactSection.style.pointerEvents = '';
 
         aboutSection.style.display = 'block';
+        aboutSection.style.pointerEvents = 'auto'; // Enable touches
         aboutSection.className = 'content-section';
         void aboutSection.offsetHeight;
         aboutSection.classList.add('show');
-        aboutOpen = true;
     }
 
     function closeAbout() {
         console.log('Closing about');
-        if (aboutCloseTimeout) {
-            clearTimeout(aboutCloseTimeout);
-        }
+
+        if (aboutCloseTimeout) clearTimeout(aboutCloseTimeout);
 
         aboutSection.classList.remove('show');
         aboutSection.classList.add('hide');
-        aboutOpen = false;
+        aboutSection.style.pointerEvents = 'none'; // IMMEDIATELY stop catching touches
 
         aboutCloseTimeout = setTimeout(() => {
             aboutSection.style.display = 'none';
             aboutSection.className = 'content-section';
+            aboutSection.style.pointerEvents = ''; // Reset
             aboutCloseTimeout = null;
-        }, 850);
+        }, 900);
     }
 
     function openContact() {
         console.log('Opening contact');
-        if (contactCloseTimeout) {
-            clearTimeout(contactCloseTimeout);
-            contactCloseTimeout = null;
-        }
 
-        if (aboutOpen) {
-            if (aboutCloseTimeout) clearTimeout(aboutCloseTimeout);
-            aboutSection.style.display = 'none';
-            aboutSection.className = 'content-section';
-            aboutOpen = false;
-        }
+        if (aboutCloseTimeout) clearTimeout(aboutCloseTimeout);
+        if (contactCloseTimeout) clearTimeout(contactCloseTimeout);
+
+        aboutSection.style.display = 'none';
+        aboutSection.className = 'content-section';
+        aboutSection.style.pointerEvents = '';
 
         contactSection.style.display = 'block';
+        contactSection.style.pointerEvents = 'auto'; // Enable touches
         contactSection.className = 'content-section';
         void contactSection.offsetHeight;
         contactSection.classList.add('show');
-        contactOpen = true;
     }
 
     function closeContact() {
         console.log('Closing contact');
-        if (contactCloseTimeout) {
-            clearTimeout(contactCloseTimeout);
-        }
+
+        if (contactCloseTimeout) clearTimeout(contactCloseTimeout);
 
         contactSection.classList.remove('show');
         contactSection.classList.add('hide');
-        contactOpen = false;
+        contactSection.style.pointerEvents = 'none'; // IMMEDIATELY stop catching touches
 
         contactCloseTimeout = setTimeout(() => {
             contactSection.style.display = 'none';
             contactSection.className = 'content-section';
+            contactSection.style.pointerEvents = ''; // Reset
             contactCloseTimeout = null;
-        }, 850);
+        }, 900);
     }
 
-    // USE CLICK EVENTS - more reliable on iOS
+    // Link handlers
     aboutLink.addEventListener('click', function(e) {
         e.preventDefault();
-        console.log('About link clicked, aboutOpen:', aboutOpen);
-
-        // Debounce rapid clicks
-        const now = Date.now();
-        if (now - lastInteractionTime < 400) {
-            console.log('Too soon, ignoring');
-            return;
-        }
-        lastInteractionTime = now;
-
-        if (aboutOpen) {
-            closeAbout();
-        } else {
-            openAbout();
-        }
+        e.stopPropagation();
+        console.log('About clicked');
+        openAbout();
     });
 
     contactLink.addEventListener('click', function(e) {
         e.preventDefault();
-        console.log('Contact link clicked, contactOpen:', contactOpen);
-
-        // Debounce rapid clicks
-        const now = Date.now();
-        if (now - lastInteractionTime < 400) {
-            console.log('Too soon, ignoring');
-            return;
-        }
-        lastInteractionTime = now;
-
-        if (contactOpen) {
-            closeContact();
-        } else {
-            openContact();
-        }
+        e.stopPropagation();
+        console.log('Contact clicked');
+        openContact();
     });
 
     // Section click to close
     aboutSection.addEventListener('click', function(e) {
+        e.stopPropagation();
+
         // Don't close if clicking on interactive elements
         if (e.target.id === 'emailLink-mobile' ||
             e.target.id === 'copyBtn-mobile' ||
             e.target.closest('#copyBtn-mobile') ||
-            e.target.closest('#emailLink-mobile') ||
-            e.target.closest('.mobile-link')) {
+            e.target.closest('#emailLink-mobile')) {
             return;
         }
 
-        // Debounce
-        const now = Date.now();
-        if (now - lastInteractionTime < 400) {
-            return;
-        }
-        lastInteractionTime = now;
-
-        if (aboutOpen) {
-            closeAbout();
-        }
+        console.log('About section clicked - closing');
+        closeAbout();
     });
 
     contactSection.addEventListener('click', function(e) {
+        e.stopPropagation();
+
         // Don't close if clicking on interactive elements
         if (e.target.id === 'emailLink-mobile' ||
             e.target.id === 'copyBtn-mobile' ||
             e.target.closest('#copyBtn-mobile') ||
-            e.target.closest('#emailLink-mobile') ||
-            e.target.closest('.mobile-link')) {
+            e.target.closest('#emailLink-mobile')) {
             return;
         }
 
-        // Debounce
-        const now = Date.now();
-        if (now - lastInteractionTime < 400) {
-            return;
-        }
-        lastInteractionTime = now;
-
-        if (contactOpen) {
-            closeContact();
-        }
+        console.log('Contact section clicked - closing');
+        closeContact();
     });
 
     // Copy email
