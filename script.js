@@ -115,20 +115,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const contentSections = document.querySelectorAll('.content-section');
     let currentOpenSection = null;
 
-    // FIX: Changed to listen directly on menu links and stop propagation
-    document.querySelectorAll('.menu-item a').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation(); // Stop the click from bubbling to content-section
+    // Menu link click handlers
+    const menuLinks = document.querySelectorAll('.menu-item a');
+    if (menuLinks.length > 0) {
+        menuLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
 
-            const href = this.getAttribute('href');
-            if (href === '#about') {
-                showContentSection('about');
-            } else if (href === '#contact') {
-                showContentSection('contact');
-            }
+                const href = this.getAttribute('href');
+                if (href === '#about') {
+                    showContentSection('about');
+                } else if (href === '#contact') {
+                    showContentSection('contact');
+                }
+            });
         });
-    });
+    }
 
     function showContentSection(sectionId) {
         const section = document.getElementById(sectionId);
@@ -178,7 +181,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     contentSections.forEach(section => {
         section.addEventListener('click', function(e) {
-            // FIX: Also check if clicking on menu items and ignore
             if (e.target.closest('.menu-item')) {
                 return;
             }
