@@ -300,85 +300,128 @@ function initMobile() {
 
     let aboutOpen = false;
     let contactOpen = false;
-    let lastOpenTime = 0; // TRACK WHEN WE LAST OPENED A SECTION
+    let lastInteractionTime = 0; // Prevent rapid-fire clicks
+    let aboutCloseTimeout = null;
+    let contactCloseTimeout = null;
 
     function openAbout() {
+        console.log('Opening about');
+        if (aboutCloseTimeout) {
+            clearTimeout(aboutCloseTimeout);
+            aboutCloseTimeout = null;
+        }
+
         if (contactOpen) {
+            if (contactCloseTimeout) clearTimeout(contactCloseTimeout);
             contactSection.style.display = 'none';
             contactSection.className = 'content-section';
             contactOpen = false;
         }
+
         aboutSection.style.display = 'block';
         aboutSection.className = 'content-section';
         void aboutSection.offsetHeight;
         aboutSection.classList.add('show');
         aboutOpen = true;
-        lastOpenTime = Date.now(); // RECORD OPEN TIME
     }
 
     function closeAbout() {
+        console.log('Closing about');
+        if (aboutCloseTimeout) {
+            clearTimeout(aboutCloseTimeout);
+        }
+
         aboutSection.classList.remove('show');
         aboutSection.classList.add('hide');
         aboutOpen = false;
-        setTimeout(() => {
+
+        aboutCloseTimeout = setTimeout(() => {
             aboutSection.style.display = 'none';
             aboutSection.className = 'content-section';
+            aboutCloseTimeout = null;
         }, 850);
     }
 
     function openContact() {
+        console.log('Opening contact');
+        if (contactCloseTimeout) {
+            clearTimeout(contactCloseTimeout);
+            contactCloseTimeout = null;
+        }
+
         if (aboutOpen) {
+            if (aboutCloseTimeout) clearTimeout(aboutCloseTimeout);
             aboutSection.style.display = 'none';
             aboutSection.className = 'content-section';
             aboutOpen = false;
         }
+
         contactSection.style.display = 'block';
         contactSection.className = 'content-section';
         void contactSection.offsetHeight;
         contactSection.classList.add('show');
         contactOpen = true;
-        lastOpenTime = Date.now(); // RECORD OPEN TIME
     }
 
     function closeContact() {
+        console.log('Closing contact');
+        if (contactCloseTimeout) {
+            clearTimeout(contactCloseTimeout);
+        }
+
         contactSection.classList.remove('show');
         contactSection.classList.add('hide');
         contactOpen = false;
-        setTimeout(() => {
+
+        contactCloseTimeout = setTimeout(() => {
             contactSection.style.display = 'none';
             contactSection.className = 'content-section';
+            contactCloseTimeout = null;
         }, 850);
     }
 
-    // Link handlers - these open/close
-    aboutLink.addEventListener('touchend', function(e) {
+    // USE CLICK EVENTS - more reliable on iOS
+    aboutLink.addEventListener('click', function(e) {
         e.preventDefault();
-        e.stopPropagation();
+        console.log('About link clicked, aboutOpen:', aboutOpen);
+
+        // Debounce rapid clicks
+        const now = Date.now();
+        if (now - lastInteractionTime < 400) {
+            console.log('Too soon, ignoring');
+            return;
+        }
+        lastInteractionTime = now;
+
         if (aboutOpen) {
             closeAbout();
         } else {
             openAbout();
         }
-    }, { passive: false });
+    });
 
-    contactLink.addEventListener('touchend', function(e) {
+    contactLink.addEventListener('click', function(e) {
         e.preventDefault();
-        e.stopPropagation();
+        console.log('Contact link clicked, contactOpen:', contactOpen);
+
+        // Debounce rapid clicks
+        const now = Date.now();
+        if (now - lastInteractionTime < 400) {
+            console.log('Too soon, ignoring');
+            return;
+        }
+        lastInteractionTime = now;
+
         if (contactOpen) {
             closeContact();
         } else {
             openContact();
         }
-    }, { passive: false });
+    });
 
-    // Section background close handlers - IGNORE IF OPENED RECENTLY
-    aboutSection.addEventListener('touchend', function(e) {
-        // CRITICAL FIX: Ignore touches within 300ms of opening
-        if (Date.now() - lastOpenTime < 300) {
-            return;
-        }
-
-        // Don't close if tapping on interactive elements
+    // Section click to close
+    aboutSection.addEventListener('click', function(e) {
+        // Don't close if clicking on interactive elements
         if (e.target.id === 'emailLink-mobile' ||
             e.target.id === 'copyBtn-mobile' ||
             e.target.closest('#copyBtn-mobile') ||
@@ -386,19 +429,21 @@ function initMobile() {
             e.target.closest('.mobile-link')) {
             return;
         }
+
+        // Debounce
+        const now = Date.now();
+        if (now - lastInteractionTime < 400) {
+            return;
+        }
+        lastInteractionTime = now;
 
         if (aboutOpen) {
             closeAbout();
         }
     });
 
-    contactSection.addEventListener('touchend', function(e) {
-        // CRITICAL FIX: Ignore touches within 300ms of opening
-        if (Date.now() - lastOpenTime < 300) {
-            return;
-        }
-
-        // Don't close if tapping on interactive elements
+    contactSection.addEventListener('click', function(e) {
+        // Don't close if clicking on interactive elements
         if (e.target.id === 'emailLink-mobile' ||
             e.target.id === 'copyBtn-mobile' ||
             e.target.closest('#copyBtn-mobile') ||
@@ -406,6 +451,13 @@ function initMobile() {
             e.target.closest('.mobile-link')) {
             return;
         }
+
+        // Debounce
+        const now = Date.now();
+        if (now - lastInteractionTime < 400) {
+            return;
+        }
+        lastInteractionTime = now;
 
         if (contactOpen) {
             closeContact();
@@ -415,14 +467,14 @@ function initMobile() {
     // Copy email
     const copyBtn = document.getElementById('copyBtn-mobile');
     if (copyBtn) {
-        copyBtn.addEventListener('touchend', function(e) {
+        copyBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
             const email = 'info@suitman.org';
             navigator.clipboard.writeText(email).then(() => {
                 copyBtn.textContent = '✓';
                 setTimeout(() => copyBtn.textContent = '⧉', 2000);
-            }, { passive: false });
+            });
         });
     }
 }
