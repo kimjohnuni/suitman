@@ -1,4 +1,4 @@
-/* Device version control - ADD THIS AT THE VERY TOP */
+/* Device version control - MUST BE AT THE VERY TOP */
 #desktop-version { display: none; }
 #mobile-version { display: none; }
 body.is-desktop #desktop-version { display: block; }
@@ -55,9 +55,11 @@ html, body {
     opacity: 1;
 }
 
-/* Show desktop images by default, hide mobile */
-.desktop-slide { display: block; }
-.mobile-slide  { display: none; }
+/* Show/hide slides based on which version is active */
+#desktop-version .desktop-slide { display: block; }
+#desktop-version .mobile-slide { display: none; }
+#mobile-version .desktop-slide { display: none; }
+#mobile-version .mobile-slide { display: block; }
 
 /* Yellow dot cursor for menu item hovers - desktop only */
 @media (hover: hover) and (pointer: fine) {
