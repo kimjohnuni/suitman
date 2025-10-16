@@ -1,53 +1,43 @@
+// Detect device type FIRST
+const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+
+// Add class to body to show correct version
+document.body.classList.add(isMobileDevice ? 'is-mobile' : 'is-desktop');
+
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded');
+    console.log('Device type:', isMobileDevice ? 'Mobile' : 'Desktop');
 
-    const logoContainer = document.querySelector('.logo-container');
-    const navContainer = document.querySelector('.nav-container');
+    if (isMobileDevice) {
+        initMobile();
+    } else {
+        initDesktop();
+    }
+});
 
-    let slides;
+// ========== DESKTOP INITIALIZATION ==========
+function initDesktop() {
+    console.log('Initializing desktop version');
+
+    const logoContainer = document.querySelector('#desktop-version .logo-container');
+    const navContainer = document.querySelector('#desktop-version .nav-container');
+    const slides = document.querySelectorAll('.desktop-slide');
+
     let currentSlide = 0;
     const slideInterval = 6000;
 
-    function loadResponsiveImages() {
-        const isMobile = window.innerWidth <= 768;
-
-        if (isMobile) {
-            slides = document.querySelectorAll('.mobile-slide');
-            slides.forEach(slide => {
-                const mobileImg = slide.getAttribute('data-mobile');
-                slide.style.backgroundImage = `url('${mobileImg}')`;
-            });
-        } else {
-            slides = document.querySelectorAll('.desktop-slide');
-            slides.forEach(slide => {
-                const desktopImg = slide.getAttribute('data-desktop');
-                slide.style.backgroundImage = `url('${desktopImg}')`;
-            });
-        }
-
-        console.log('Loaded', slides.length, isMobile ? 'mobile' : 'desktop', 'slides');
-        resetSlideshow();
-    }
-
-    const desktopLogoSettings = [
+    const logoSettings = [
         false, true, false, true, true, true, false, false, true, true, false
     ];
 
-    const mobileLogoSettings = [
-        true, true, true, false, true, false
-    ];
+    // Load images
+    slides.forEach(slide => {
+        const img = slide.getAttribute('data-desktop');
+        slide.style.backgroundImage = `url('${img}')`;
+    });
 
     function updateLogo() {
-        if (!logoContainer || !navContainer) {
-            console.warn('Logo or nav container missing');
-            return;
-        }
-
         logoContainer.classList.remove('bright-background', 'dark-background');
         navContainer.classList.remove('bright-background', 'dark-background');
-
-        const isMobile = window.innerWidth <= 768;
-        const logoSettings = isMobile ? mobileLogoSettings : desktopLogoSettings;
 
         if (logoSettings[currentSlide]) {
             logoContainer.classList.add('bright-background');
@@ -59,239 +49,113 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showNextSlide() {
-        if (!slides || slides.length === 0) return;
-
         slides[currentSlide].classList.remove('active');
         currentSlide = (currentSlide + 1) % slides.length;
         slides[currentSlide].classList.add('active');
         updateLogo();
     }
 
-    function resetSlideshow() {
-        document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
-        currentSlide = 0;
-        if (slides && slides.length > 0) {
-            slides[0].classList.add('active');
-            updateLogo();
-        }
-    }
+    // Start slideshow
+    slides[0].classList.add('active');
+    updateLogo();
+    setInterval(showNextSlide, slideInterval);
 
-    let intervalId;
+    // Section handling
+    const aboutSection = document.getElementById('about-desktop');
+    const contactSection = document.getElementById('contact-desktop');
+    const aboutLink = document.querySelector('.desktop-link[href="#about"]');
+    const contactLink = document.querySelector('.desktop-link[href="#contact"]');
 
-    function startSlideshow() {
-        if (intervalId) clearInterval(intervalId);
-        intervalId = setInterval(showNextSlide, slideInterval);
-    }
+    aboutSection.setAttribute('data-state', 'closed');
+    contactSection.setAttribute('data-state', 'closed');
 
-    loadResponsiveImages();
-    startSlideshow();
+    aboutLink.addEventListener('click', function(e) {
+        e.preventDefault();
 
-    let resizeTimer;
-    window.addEventListener('resize', function() {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(function() {
-            const newWidth = window.innerWidth;
-            const wasMobile = slides && slides[0] && slides[0].classList.contains('mobile-slide');
-            const nowMobile = newWidth <= 768;
+        const aboutState = aboutSection.getAttribute('data-state');
+        const contactState = contactSection.getAttribute('data-state');
 
-            if (wasMobile !== nowMobile) {
-                loadResponsiveImages();
-                startSlideshow();
-            }
-        }, 250);
-    });
-
-    // ========== SECTIONS ==========
-    const aboutSection = document.getElementById('about');
-    const contactSection = document.getElementById('contact');
-    const aboutLink = document.querySelector('a[href="#about"]');
-    const contactLink = document.querySelector('a[href="#contact"]');
-
-    // Detect if touch device
-    const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-
-    if (isTouchDevice) {
-        // ========== MOBILE ONLY ==========
-        console.log('Using mobile touch logic');
-
-        let aboutOpen = false;
-        let contactOpen = false;
-        let isAnimating = false;
-        let touchHandled = false;
-
-        // Prevent click events completely on mobile
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('a[href^="#"]')) {
-                e.preventDefault();
-                e.stopPropagation();
-                e.stopImmediatePropagation();
-                return false;
-            }
-        }, true);
-
-        // About link - touchend
-        aboutLink.addEventListener('touchend', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            if (isAnimating) return;
-
-            touchHandled = true;
-            setTimeout(() => { touchHandled = false; }, 400);
-
-            if (!aboutOpen) {
-                isAnimating = true;
-                // Close contact if open (no animation, instant)
-                if (contactOpen) {
-                    contactSection.style.display = 'none';
-                    contactSection.className = 'content-section';
-                    contactOpen = false;
-                }
-                // Open about
-                aboutSection.className = 'content-section';
-                aboutSection.style.display = 'block';
-                void aboutSection.offsetHeight;
-                aboutSection.classList.add('show');
-                aboutOpen = true;
-                setTimeout(() => { isAnimating = false; }, 100);
-            } else {
-                isAnimating = true;
-                // Close about
-                aboutSection.classList.remove('show');
-                aboutSection.classList.add('hide');
-                aboutOpen = false;
-                setTimeout(() => {
-                    aboutSection.style.display = 'none';
-                    aboutSection.className = 'content-section';
-                    isAnimating = false;
-                }, 900);
-            }
-        }, { passive: false });
-
-        // Contact link - touchend
-        contactLink.addEventListener('touchend', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            if (isAnimating) return;
-
-            touchHandled = true;
-            setTimeout(() => { touchHandled = false; }, 400);
-
-            if (!contactOpen) {
-                isAnimating = true;
-                // Close about if open (no animation, instant)
-                if (aboutOpen) {
-                    aboutSection.style.display = 'none';
-                    aboutSection.className = 'content-section';
-                    aboutOpen = false;
-                }
-                // Open contact
-                contactSection.className = 'content-section';
-                contactSection.style.display = 'block';
-                void contactSection.offsetHeight;
-                contactSection.classList.add('show');
-                contactOpen = true;
-                setTimeout(() => { isAnimating = false; }, 100);
-            } else {
-                isAnimating = true;
-                // Close contact
+        if (aboutState === 'closed') {
+            if (contactState === 'open') {
+                // Crossfade
+                contactSection.setAttribute('data-state', 'closed');
                 contactSection.classList.remove('show');
                 contactSection.classList.add('hide');
-                contactOpen = false;
+
+                aboutSection.setAttribute('data-state', 'open');
+                aboutSection.className = 'content-section crossfade';
+                aboutSection.style.display = 'block';
+                setTimeout(() => aboutSection.classList.add('show'), 10);
+
                 setTimeout(() => {
                     contactSection.style.display = 'none';
                     contactSection.className = 'content-section';
-                    isAnimating = false;
-                }, 900);
-            }
-        }, { passive: false });
-
-        // Close on background tap - About
-        aboutSection.addEventListener('touchend', function(e) {
-            if (touchHandled) return;
-
-            if (e.target.classList.contains('scrollable-area') ||
-                e.target.classList.contains('content-section')) {
-
-                if (aboutOpen && !isAnimating) {
-                    isAnimating = true;
-                    aboutSection.classList.remove('show');
-                    aboutSection.classList.add('hide');
-                    aboutOpen = false;
-                    setTimeout(() => {
-                        aboutSection.style.display = 'none';
-                        aboutSection.className = 'content-section';
-                        isAnimating = false;
-                    }, 900);
-                }
-            }
-        });
-
-        // Close on background tap - Contact
-        contactSection.addEventListener('touchend', function(e) {
-            if (touchHandled) return;
-
-            if (e.target.classList.contains('scrollable-area') ||
-                e.target.classList.contains('content-section')) {
-
-                if (contactOpen && !isAnimating) {
-                    isAnimating = true;
-                    contactSection.classList.remove('show');
-                    contactSection.classList.add('hide');
-                    contactOpen = false;
-                    setTimeout(() => {
-                        contactSection.style.display = 'none';
-                        contactSection.className = 'content-section';
-                        isAnimating = false;
-                    }, 900);
-                }
-            }
-        });
-
-    } else {
-        // ========== DESKTOP ONLY ==========
-        console.log('Using desktop click logic');
-
-        aboutSection.setAttribute('data-state', 'closed');
-        contactSection.setAttribute('data-state', 'closed');
-
-        // ABOUT LINK
-        aboutLink.addEventListener('click', function(e) {
-            e.preventDefault();
-
-            const aboutState = aboutSection.getAttribute('data-state');
-            const contactState = contactSection.getAttribute('data-state');
-
-            if (aboutState === 'closed') {
-                if (contactState === 'open') {
-                    // CROSSFADE
-                    contactSection.setAttribute('data-state', 'closed');
-                    contactSection.classList.remove('show');
-                    contactSection.classList.add('hide');
-
-                    aboutSection.setAttribute('data-state', 'open');
-                    aboutSection.className = 'content-section crossfade';
-                    aboutSection.style.display = 'block';
-                    setTimeout(() => {
-                        aboutSection.classList.add('show');
-                    }, 10);
-
-                    setTimeout(() => {
-                        contactSection.style.display = 'none';
-                        contactSection.className = 'content-section';
-                    }, 800);
-                } else {
-                    // Normal open
-                    aboutSection.setAttribute('data-state', 'open');
-                    aboutSection.className = 'content-section';
-                    aboutSection.style.display = 'block';
-                    setTimeout(() => {
-                        aboutSection.classList.add('show');
-                    }, 10);
-                }
+                }, 800);
             } else {
-                // Close about
+                // Open
+                aboutSection.setAttribute('data-state', 'open');
+                aboutSection.className = 'content-section';
+                aboutSection.style.display = 'block';
+                setTimeout(() => aboutSection.classList.add('show'), 10);
+            }
+        } else {
+            // Close
+            aboutSection.setAttribute('data-state', 'closed');
+            aboutSection.classList.remove('show');
+            aboutSection.classList.add('hide');
+            setTimeout(() => {
+                aboutSection.style.display = 'none';
+                aboutSection.className = 'content-section';
+            }, 800);
+        }
+    });
+
+    contactLink.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        const aboutState = aboutSection.getAttribute('data-state');
+        const contactState = contactSection.getAttribute('data-state');
+
+        if (contactState === 'closed') {
+            if (aboutState === 'open') {
+                // Crossfade
+                aboutSection.setAttribute('data-state', 'closed');
+                aboutSection.classList.remove('show');
+                aboutSection.classList.add('hide');
+
+                contactSection.setAttribute('data-state', 'open');
+                contactSection.className = 'content-section crossfade';
+                contactSection.style.display = 'block';
+                setTimeout(() => contactSection.classList.add('show'), 10);
+
+                setTimeout(() => {
+                    aboutSection.style.display = 'none';
+                    aboutSection.className = 'content-section';
+                }, 800);
+            } else {
+                // Open
+                contactSection.setAttribute('data-state', 'open');
+                contactSection.className = 'content-section';
+                contactSection.style.display = 'block';
+                setTimeout(() => contactSection.classList.add('show'), 10);
+            }
+        } else {
+            // Close
+            contactSection.setAttribute('data-state', 'closed');
+            contactSection.classList.remove('show');
+            contactSection.classList.add('hide');
+            setTimeout(() => {
+                contactSection.style.display = 'none';
+                contactSection.className = 'content-section';
+            }, 800);
+        }
+    });
+
+    // Close on background click
+    aboutSection.addEventListener('click', function(e) {
+        if (e.target.classList.contains('scrollable-area') ||
+            e.target.classList.contains('content-section')) {
+            if (aboutSection.getAttribute('data-state') === 'open') {
                 aboutSection.setAttribute('data-state', 'closed');
                 aboutSection.classList.remove('show');
                 aboutSection.classList.add('hide');
@@ -300,44 +164,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     aboutSection.className = 'content-section';
                 }, 800);
             }
-        });
+        }
+    });
 
-        // CONTACT LINK
-        contactLink.addEventListener('click', function(e) {
-            e.preventDefault();
-
-            const aboutState = aboutSection.getAttribute('data-state');
-            const contactState = contactSection.getAttribute('data-state');
-
-            if (contactState === 'closed') {
-                if (aboutState === 'open') {
-                    // CROSSFADE
-                    aboutSection.setAttribute('data-state', 'closed');
-                    aboutSection.classList.remove('show');
-                    aboutSection.classList.add('hide');
-
-                    contactSection.setAttribute('data-state', 'open');
-                    contactSection.className = 'content-section crossfade';
-                    contactSection.style.display = 'block';
-                    setTimeout(() => {
-                        contactSection.classList.add('show');
-                    }, 10);
-
-                    setTimeout(() => {
-                        aboutSection.style.display = 'none';
-                        aboutSection.className = 'content-section';
-                    }, 800);
-                } else {
-                    // Normal open
-                    contactSection.setAttribute('data-state', 'open');
-                    contactSection.className = 'content-section';
-                    contactSection.style.display = 'block';
-                    setTimeout(() => {
-                        contactSection.classList.add('show');
-                    }, 10);
-                }
-            } else {
-                // Close contact
+    contactSection.addEventListener('click', function(e) {
+        if (e.target.classList.contains('scrollable-area') ||
+            e.target.classList.contains('content-section')) {
+            if (contactSection.getAttribute('data-state') === 'open') {
                 contactSection.setAttribute('data-state', 'closed');
                 contactSection.classList.remove('show');
                 contactSection.classList.add('hide');
@@ -346,56 +179,172 @@ document.addEventListener('DOMContentLoaded', function() {
                     contactSection.className = 'content-section';
                 }, 800);
             }
-        });
+        }
+    });
 
-        // CLOSE ON BACKGROUND CLICK
-        aboutSection.addEventListener('click', function(e) {
-            if (e.target.classList.contains('scrollable-area') ||
-                e.target.classList.contains('content-section')) {
-                if (aboutSection.getAttribute('data-state') === 'open') {
-                    aboutSection.setAttribute('data-state', 'closed');
-                    aboutSection.classList.remove('show');
-                    aboutSection.classList.add('hide');
-                    setTimeout(() => {
-                        aboutSection.style.display = 'none';
-                        aboutSection.className = 'content-section';
-                    }, 800);
-                }
-            }
-        });
-
-        contactSection.addEventListener('click', function(e) {
-            if (e.target.classList.contains('scrollable-area') ||
-                e.target.classList.contains('content-section')) {
-                if (contactSection.getAttribute('data-state') === 'open') {
-                    contactSection.setAttribute('data-state', 'closed');
-                    contactSection.classList.remove('show');
-                    contactSection.classList.add('hide');
-                    setTimeout(() => {
-                        contactSection.style.display = 'none';
-                        contactSection.className = 'content-section';
-                    }, 800);
-                }
-            }
-        });
-    }
-
-    // Copy email functionality
-    const copyBtn = document.getElementById('copyBtn');
+    // Copy email
+    const copyBtn = document.getElementById('copyBtn-desktop');
     if (copyBtn) {
         copyBtn.addEventListener('click', function(e) {
             e.stopPropagation();
             const email = 'info@suitman.org';
             navigator.clipboard.writeText(email).then(() => {
                 copyBtn.textContent = '✓';
-                setTimeout(() => {
-                    copyBtn.textContent = '⧉';
-                }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy:', err);
+                setTimeout(() => copyBtn.textContent = '⧉', 2000);
             });
         });
     }
-});
+}
 
-console.log('Script loaded');
+// ========== MOBILE INITIALIZATION ==========
+function initMobile() {
+    console.log('Initializing mobile version');
+
+    const logoContainer = document.querySelector('#mobile-version .logo-container');
+    const navContainer = document.querySelector('#mobile-version .nav-container');
+    const slides = document.querySelectorAll('.mobile-slide');
+
+    let currentSlide = 0;
+    const slideInterval = 6000;
+
+    const logoSettings = [
+        true, true, true, false, true, false
+    ];
+
+    // Load images
+    slides.forEach(slide => {
+        const img = slide.getAttribute('data-mobile');
+        slide.style.backgroundImage = `url('${img}')`;
+    });
+
+    function updateLogo() {
+        logoContainer.classList.remove('bright-background', 'dark-background');
+        navContainer.classList.remove('bright-background', 'dark-background');
+
+        if (logoSettings[currentSlide]) {
+            logoContainer.classList.add('bright-background');
+            navContainer.classList.add('bright-background');
+        } else {
+            logoContainer.classList.add('dark-background');
+            navContainer.classList.add('dark-background');
+        }
+    }
+
+    function showNextSlide() {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (currentSlide + 1) % slides.length;
+        slides[currentSlide].classList.add('active');
+        updateLogo();
+    }
+
+    // Start slideshow
+    slides[0].classList.add('active');
+    updateLogo();
+    setInterval(showNextSlide, slideInterval);
+
+    // Section handling - MOBILE TOUCH
+    const aboutSection = document.getElementById('about-mobile');
+    const contactSection = document.getElementById('contact-mobile');
+    const aboutLink = document.querySelector('.mobile-link[href="#about"]');
+    const contactLink = document.querySelector('.mobile-link[href="#contact"]');
+
+    let aboutOpen = false;
+    let contactOpen = false;
+
+    function openAbout() {
+        if (contactOpen) {
+            contactSection.style.display = 'none';
+            contactSection.className = 'content-section';
+            contactOpen = false;
+        }
+        aboutSection.style.display = 'block';
+        aboutSection.className = 'content-section';
+        void aboutSection.offsetHeight;
+        aboutSection.classList.add('show');
+        aboutOpen = true;
+    }
+
+    function closeAbout() {
+        aboutSection.classList.remove('show');
+        aboutSection.classList.add('hide');
+        aboutOpen = false;
+        setTimeout(() => {
+            aboutSection.style.display = 'none';
+            aboutSection.className = 'content-section';
+        }, 850);
+    }
+
+    function openContact() {
+        if (aboutOpen) {
+            aboutSection.style.display = 'none';
+            aboutSection.className = 'content-section';
+            aboutOpen = false;
+        }
+        contactSection.style.display = 'block';
+        contactSection.className = 'content-section';
+        void contactSection.offsetHeight;
+        contactSection.classList.add('show');
+        contactOpen = true;
+    }
+
+    function closeContact() {
+        contactSection.classList.remove('show');
+        contactSection.classList.add('hide');
+        contactOpen = false;
+        setTimeout(() => {
+            contactSection.style.display = 'none';
+            contactSection.className = 'content-section';
+        }, 850);
+    }
+
+    aboutLink.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        if (aboutOpen) {
+            closeAbout();
+        } else {
+            openAbout();
+        }
+    });
+
+    contactLink.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        if (contactOpen) {
+            closeContact();
+        } else {
+            openContact();
+        }
+    });
+
+    // Close on background tap
+    aboutSection.addEventListener('touchend', function(e) {
+        if (e.target.classList.contains('scrollable-area') ||
+            e.target.classList.contains('content-section')) {
+            if (aboutOpen) {
+                closeAbout();
+            }
+        }
+    });
+
+    contactSection.addEventListener('touchend', function(e) {
+        if (e.target.classList.contains('scrollable-area') ||
+            e.target.classList.contains('content-section')) {
+            if (contactOpen) {
+                closeContact();
+            }
+        }
+    });
+
+    // Copy email
+    const copyBtn = document.getElementById('copyBtn-mobile');
+    if (copyBtn) {
+        copyBtn.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const email = 'info@suitman.org';
+            navigator.clipboard.writeText(email).then(() => {
+                copyBtn.textContent = '✓';
+                setTimeout(() => copyBtn.textContent = '⧉', 2000);
+            });
+        });
+    }
+}

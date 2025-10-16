@@ -1,3 +1,9 @@
+/* Device version control - ADD THIS AT THE VERY TOP */
+#desktop-version { display: none; }
+#mobile-version { display: none; }
+body.is-desktop #desktop-version { display: block; }
+body.is-mobile #mobile-version { display: block; }
+
 /* Reset and base styles */
 * {
     margin: 0;
@@ -30,7 +36,7 @@ html, body {
     cursor: url('data:image/svg+xml;utf8,<svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 18L9 12L15 6" stroke="%23FFD600" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>') 12 24, pointer;
 }
 
-/* Prevent logo from intercepting pointer events (diagnosis only) */
+/* Prevent logo from intercepting pointer events */
 .logo-container { pointer-events: none !important; }
 
 .slide {
@@ -53,10 +59,19 @@ html, body {
 .desktop-slide { display: block; }
 .mobile-slide  { display: none; }
 
-/* Yellow dot cursor for menu item hovers */
-.menu-item a:hover {
-    opacity: 0.7;
-    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="9" fill="%23FFD600"/></svg>') 13 13, pointer;
+/* Yellow dot cursor for menu item hovers - desktop only */
+@media (hover: hover) and (pointer: fine) {
+    .menu-item a:hover {
+        opacity: 0.7;
+        cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="9" fill="%23FFD600"/></svg>') 13 13, pointer;
+    }
+}
+
+/* Active state for touch devices */
+@media (hover: none) and (pointer: coarse) {
+    .menu-item a:active {
+        opacity: 0.7;
+    }
 }
 
 .logo-container {
@@ -122,7 +137,6 @@ html, body {
     z-index: 1000;
     text-align: left;
     pointer-events: auto;
-    background: rgba(0, 0, 0, 0.01); /* Invisible but blocks click-through */
 }
 
 .content-section.show,
@@ -242,34 +256,59 @@ html, body {
     margin-bottom: 20px;
     color: rgba(255, 255, 255, 0.9);
 }
-#about .scrollable-content { padding-bottom: 150px; }
-#about .scrollable-content h1 { font-size: 3.5rem; }
-#about .scrollable-content h2 { font-size: 2.5rem; }
-#about .scrollable-content p {
+
+/* ABOUT section styling */
+#about-desktop .scrollable-content,
+#about-mobile .scrollable-content {
+    padding-bottom: 150px;
+}
+#about-desktop .scrollable-content h1,
+#about-mobile .scrollable-content h1 {
+    font-size: 3.5rem;
+}
+#about-desktop .scrollable-content h2,
+#about-mobile .scrollable-content h2 {
+    font-size: 2.5rem;
+}
+#about-desktop .scrollable-content p,
+#about-mobile .scrollable-content p {
     font-size: 1.5rem;
     line-height: 1.8;
     margin-bottom: 28px;
     font-family: 'Roboto', Arial, sans-serif;
 }
-#about .scrollable-content p:last-child { margin-bottom: 0; }
-#contact .scrollable-content h1 { font-size: 3.5rem; }
-#contact .scrollable-content p {
+#about-desktop .scrollable-content p:last-child,
+#about-mobile .scrollable-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* CONTACT section styling */
+#contact-desktop .scrollable-content h1,
+#contact-mobile .scrollable-content h1 {
+    font-size: 3.5rem;
+}
+#contact-desktop .scrollable-content p,
+#contact-mobile .scrollable-content p {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
 }
-#contact .scrollable-content p,
-#contact .scrollable-content a {
+#contact-desktop .scrollable-content p,
+#contact-desktop .scrollable-content a,
+#contact-mobile .scrollable-content p,
+#contact-mobile .scrollable-content a {
     font-size: 1.5rem;
     font-family: 'Roboto', Arial, sans-serif;
     color: #fff;
     text-decoration: none;
     margin-bottom: 0;
 }
-#contact .scrollable-content a:hover {
+#contact-desktop .scrollable-content a:hover,
+#contact-mobile .scrollable-content a:active {
     opacity: 0.8;
     text-decoration: none;
 }
+
 .copy-btn {
     margin-left: 15px;
     background: transparent;
@@ -282,12 +321,14 @@ html, body {
     vertical-align: middle;
     outline: none;
 }
-.copy-btn:hover {
+.copy-btn:hover,
+.copy-btn:active {
     background: transparent;
     opacity: 0.8;
     transform: none;
 }
-.copy-btn:active { transform: none; }
+
+/* Custom scrollbar */
 .scrollable-area::-webkit-scrollbar { width: 8px; }
 .scrollable-area::-webkit-scrollbar-track {
     background: rgba(255, 255, 255, 0.1);
@@ -301,142 +342,115 @@ html, body {
     background: rgba(255, 255, 255, 0.5);
 }
 
-/* Tablet and down */
+/* Mobile responsive adjustments */
 @media (max-width: 768px) {
-  /* Slides */
-  .desktop-slide { display: none; }
-  .mobile-slide  { display: block; }
+    .logo-container { top: 20px; width: 100px; height: 40px; }
+    .nav-container { top: 85px; gap: 12px; }
+    .menu-item { font-size: 16px; }
 
-  /* Logo/Nav */
-  .logo-container { top: 20px; width: 100px; height: 40px; }
-  .nav-container { top: 85px; gap: 12px; }
-  .menu-item { font-size: 16px; }
+    .scrollable-area {
+        position: absolute;
+        top: 120px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: auto;
+        padding: 15px 20px 0px;
+        overflow-y: auto;
+        background: linear-gradient(
+            to top,
+            rgba(0, 0, 0, 1) 0%,
+            rgba(0, 0, 0, 0.95) 20%,
+            rgba(0, 0, 0, 0.8) 40%,
+            rgba(0, 0, 0, 0.6) 60%,
+            rgba(0, 0, 0, 0.4) 80%,
+            rgba(0, 0, 0, 0) 100%
+        );
+        --fadeSize: 54px;
+        -webkit-mask-image: linear-gradient(to bottom, transparent 0px, black var(--fadeSize), black 100%);
+        mask-image: linear-gradient(to bottom, transparent 0px, black var(--fadeSize), black 100%);
+        pointer-events: auto;
+    }
 
-  /* Overlay scroll area */
-  .scrollable-area {
-    position: absolute;
-    top: 120px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: auto;
-    padding: 15px 20px 0px;
-    overflow-y: auto;
-    background: linear-gradient(
-      to top,
-      rgba(0, 0, 0, 1) 0%,
-      rgba(0, 0, 0, 0.95) 20%,
-      rgba(0, 0, 0, 0.8) 40%,
-      rgba(0, 0, 0, 0.6) 60%,
-      rgba(0, 0, 0, 0.4) 80%,
-      rgba(0, 0, 0, 0) 100%
-    );
-    --fadeSize: 54px;
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0px, black var(--fadeSize), black 100%);
-    mask-image: linear-gradient(to bottom, transparent 0px, black var(--fadeSize), black 100%);
-    pointer-events: auto;
-  }
+    .content-section h1,
+    #about-desktop .scrollable-content h1,
+    #about-mobile .scrollable-content h1,
+    #contact-desktop .scrollable-content h1,
+    #contact-mobile .scrollable-content h1 { font-size: 2.5rem; }
 
-  /* Type sizes */
-  .content-section h1,
-  #about .scrollable-content h1,
-  #contact .scrollable-content h1 { font-size: 2.5rem; }
+    .content-section h2,
+    #about-desktop .scrollable-content h2,
+    #about-mobile .scrollable-content h2 { font-size: 1.9rem; }
 
-  .content-section h2,
-  #about .scrollable-content h2 { font-size: 1.9rem; }
+    .content-section p,
+    #about-desktop .scrollable-content p,
+    #about-mobile .scrollable-content p,
+    #contact-desktop .scrollable-content p,
+    #contact-desktop .scrollable-content a,
+    #contact-mobile .scrollable-content p,
+    #contact-mobile .scrollable-content a { font-size: 1.15rem; }
 
-  .content-section p,
-  #about .scrollable-content p,
-  #contact .scrollable-content p,
-  #contact .scrollable-content a { font-size: 1.15rem; }
-
-  .copy-btn { font-size: 1rem; padding: 0; }
+    .copy-btn { font-size: 1rem; padding: 0; }
 }
 
-/* Phones and small devices */
 @media (max-width: 480px) {
-  /* Logo/Nav */
-  .logo-container { top: 15px !important; width: 80px; height: 32px; }
-  .nav-container { top: 135px !important; gap: 10px; }
-  .menu-item { font-size: 18px; }
+    .logo-container { top: 15px !important; width: 80px; height: 32px; }
+    .nav-container { top: 135px !important; gap: 10px; }
+    .menu-item { font-size: 18px; }
 
-  /* Overlay scroll area */
-  .scrollable-area {
-    position: absolute;
-    top: 165px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: auto;
-    padding: 10px 15px 0px;
-    overflow-y: auto;
-    background: linear-gradient(
-      to top,
-      rgba(0, 0, 0, 1) 0%,
-      rgba(0, 0, 0, 0.95) 20%,
-      rgba(0, 0, 0, 0.8) 40%,
-      rgba(0, 0, 0, 0.6) 60%,
-      rgba(0, 0, 0, 0.4) 80%,
-      rgba(0, 0, 0, 0) 100%
-    );
-    --fadeSize: 54px;
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0px, black var(--fadeSize), black 100%);
-    mask-image: linear-gradient(to bottom, transparent 0px, black var(--fadeSize), black 100%);
-    pointer-events: auto;
-  }
+    .scrollable-area {
+        position: absolute;
+        top: 165px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: auto;
+        padding: 10px 15px 0px;
+        overflow-y: auto;
+        background: linear-gradient(
+            to top,
+            rgba(0, 0, 0, 1) 0%,
+            rgba(0, 0, 0, 0.95) 20%,
+            rgba(0, 0, 0, 0.8) 40%,
+            rgba(0, 0, 0, 0.6) 60%,
+            rgba(0, 0, 0, 0.4) 80%,
+            rgba(0, 0, 0, 0) 100%
+        );
+        --fadeSize: 54px;
+        -webkit-mask-image: linear-gradient(to bottom, transparent 0px, black var(--fadeSize), black 100%);
+        mask-image: linear-gradient(to bottom, transparent 0px, black var(--fadeSize), black 100%);
+        pointer-events: auto;
+    }
 
-  /* Optional fixed-height variant for very small viewports */
-  .content-section .scrollable-area {
-    height: calc(100vh - 160px);
-  }
+    .content-section .scrollable-area {
+        height: calc(100vh - 160px);
+    }
 
-  /* Type and spacing */
-  .content-section h1,
-  #about .scrollable-content h1,
-  #contact .scrollable-content h1 { font-size: 2rem; }
+    .content-section h1,
+    #about-desktop .scrollable-content h1,
+    #about-mobile .scrollable-content h1,
+    #contact-desktop .scrollable-content h1,
+    #contact-mobile .scrollable-content h1 { font-size: 2rem; }
 
-  .content-section h2,
-  #about .scrollable-content h2 { font-size: 1.4rem; }
+    .content-section h2,
+    #about-desktop .scrollable-content h2,
+    #about-mobile .scrollable-content h2 { font-size: 1.4rem; }
 
-  #about .scrollable-content { padding-bottom: 220px; }
+    #about-desktop .scrollable-content,
+    #about-mobile .scrollable-content { padding-bottom: 220px; }
 
-  .content-section p,
-  #about .scrollable-content p,
-  #contact .scrollable-content p,
-  #contact .scrollable-content a { font-size: 1.15rem; }
+    .content-section p,
+    #about-desktop .scrollable-content p,
+    #about-mobile .scrollable-content p,
+    #contact-desktop .scrollable-content p,
+    #contact-desktop .scrollable-content a,
+    #contact-mobile .scrollable-content p,
+    #contact-mobile .scrollable-content a { font-size: 1.15rem; }
 
-  .copy-btn { font-size: 1rem; padding: 0; }
+    .copy-btn { font-size: 1rem; padding: 0; }
 
-  /* Tighten heading spacing on phones */
-  .content-section h1 { margin-bottom: 0px; }
+    .content-section h1 { margin-bottom: 0px; }
 }
-
-/* Scope hover to real hover devices; use active for touch */
-@media (hover: hover) and (pointer: fine) {
-  .menu-item a:hover { opacity: 0.7; }
-}
-@media (hover: none) and (pointer: coarse) {
-  .menu-item a:active { opacity: 0.7; }
-}
-
-
-
-
-
-/* Make sure base html/body don’t have extra margin/padding */
-html, body {
-    margin: 0 !important;
-    padding: 0 !important;
-    height: 100%;
-    width: 100%;
-}
-
-
-
-
-
-
-
 
 /* Hide scrollbars */
 body::-webkit-scrollbar { display: none; }
