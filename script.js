@@ -287,12 +287,12 @@ function initMobile() {
         updateLogo();
     }
 
-    // Start slideshow - AUTO ONLY, NO MANUAL NAVIGATION
+    // Start slideshow - AUTO ONLY
     slides[0].classList.add('active');
     updateLogo();
     setInterval(showNextSlide, slideInterval);
 
-    // Section handling - MOBILE TOUCH
+    // Section handling
     const aboutSection = document.getElementById('about-mobile');
     const contactSection = document.getElementById('contact-mobile');
     const aboutLink = document.querySelector('.mobile-link[href="#about"]');
@@ -300,6 +300,7 @@ function initMobile() {
 
     let aboutOpen = false;
     let contactOpen = false;
+    let lastOpenTime = 0; // TRACK WHEN WE LAST OPENED A SECTION
 
     function openAbout() {
         if (contactOpen) {
@@ -312,6 +313,7 @@ function initMobile() {
         void aboutSection.offsetHeight;
         aboutSection.classList.add('show');
         aboutOpen = true;
+        lastOpenTime = Date.now(); // RECORD OPEN TIME
     }
 
     function closeAbout() {
@@ -335,6 +337,7 @@ function initMobile() {
         void contactSection.offsetHeight;
         contactSection.classList.add('show');
         contactOpen = true;
+        lastOpenTime = Date.now(); // RECORD OPEN TIME
     }
 
     function closeContact() {
@@ -347,6 +350,7 @@ function initMobile() {
         }, 850);
     }
 
+    // Link handlers - these open/close
     aboutLink.addEventListener('touchend', function(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -355,7 +359,7 @@ function initMobile() {
         } else {
             openAbout();
         }
-    });
+    }, { passive: false });
 
     contactLink.addEventListener('touchend', function(e) {
         e.preventDefault();
@@ -365,15 +369,21 @@ function initMobile() {
         } else {
             openContact();
         }
-    });
+    }, { passive: false });
 
-    // Close on tap anywhere in section (including text)
+    // Section background close handlers - IGNORE IF OPENED RECENTLY
     aboutSection.addEventListener('touchend', function(e) {
-        // Don't close if tapping email link or copy button
+        // CRITICAL FIX: Ignore touches within 300ms of opening
+        if (Date.now() - lastOpenTime < 300) {
+            return;
+        }
+
+        // Don't close if tapping on interactive elements
         if (e.target.id === 'emailLink-mobile' ||
             e.target.id === 'copyBtn-mobile' ||
             e.target.closest('#copyBtn-mobile') ||
-            e.target.closest('#emailLink-mobile')) {
+            e.target.closest('#emailLink-mobile') ||
+            e.target.closest('.mobile-link')) {
             return;
         }
 
@@ -383,11 +393,17 @@ function initMobile() {
     });
 
     contactSection.addEventListener('touchend', function(e) {
-        // Don't close if tapping email link or copy button
+        // CRITICAL FIX: Ignore touches within 300ms of opening
+        if (Date.now() - lastOpenTime < 300) {
+            return;
+        }
+
+        // Don't close if tapping on interactive elements
         if (e.target.id === 'emailLink-mobile' ||
             e.target.id === 'copyBtn-mobile' ||
             e.target.closest('#copyBtn-mobile') ||
-            e.target.closest('#emailLink-mobile')) {
+            e.target.closest('#emailLink-mobile') ||
+            e.target.closest('.mobile-link')) {
             return;
         }
 
@@ -406,7 +422,7 @@ function initMobile() {
             navigator.clipboard.writeText(email).then(() => {
                 copyBtn.textContent = '✓';
                 setTimeout(() => copyBtn.textContent = '⧉', 2000);
-            });
+            }, { passive: false });
         });
     }
 }
