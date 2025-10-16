@@ -309,6 +309,9 @@ function initMobile() {
         if (aboutCloseTimeout) clearTimeout(aboutCloseTimeout);
         if (contactCloseTimeout) clearTimeout(contactCloseTimeout);
 
+        // SET STATE IMMEDIATELY
+        aboutOpen = true;
+
         // Close contact instantly
         contactSection.style.display = 'none';
         contactSection.className = 'content-section';
@@ -320,8 +323,7 @@ function initMobile() {
             aboutSection.className = 'content-section';
             void aboutSection.offsetHeight;
             aboutSection.classList.add('show');
-            aboutOpen = true;
-        }, 50); // 50ms delay
+        }, 50);
     }
 
     function closeAbout() {
@@ -346,6 +348,9 @@ function initMobile() {
         if (aboutCloseTimeout) clearTimeout(aboutCloseTimeout);
         if (contactCloseTimeout) clearTimeout(contactCloseTimeout);
 
+        // SET STATE IMMEDIATELY
+        contactOpen = true;
+
         // Close about instantly
         aboutSection.style.display = 'none';
         aboutSection.className = 'content-section';
@@ -357,8 +362,7 @@ function initMobile() {
             contactSection.className = 'content-section';
             void contactSection.offsetHeight;
             contactSection.classList.add('show');
-            contactOpen = true;
-        }, 50); // 50ms delay
+        }, 50);
     }
 
     function closeContact() {
@@ -400,7 +404,7 @@ function initMobile() {
         }
     });
 
-    // Section click to close - ONLY if section is actually open
+    // Section click to close
     aboutSection.addEventListener('click', function(e) {
         if (e.target.id === 'emailLink-mobile' ||
             e.target.id === 'copyBtn-mobile' ||
@@ -411,7 +415,6 @@ function initMobile() {
 
         console.log('About section clicked, open:', aboutOpen);
 
-        // Only close if it's been open for at least 100ms
         if (aboutOpen) {
             closeAbout();
         }
@@ -427,7 +430,6 @@ function initMobile() {
 
         console.log('Contact section clicked, open:', contactOpen);
 
-        // Only close if it's been open for at least 100ms
         if (contactOpen) {
             closeContact();
         }
