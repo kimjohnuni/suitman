@@ -252,7 +252,6 @@ function initMobile() {
 
     const logoContainer = document.querySelector('#mobile-version .logo-container');
     const navContainer = document.querySelector('#mobile-version .nav-container');
-    const slideshowContainer = document.querySelector('#mobile-version .slideshow-container');
     const slides = document.querySelectorAll('.mobile-slide');
 
     let currentSlide = 0;
@@ -281,43 +280,17 @@ function initMobile() {
         }
     }
 
-    function showSlide(index) {
+    function showNextSlide() {
         slides[currentSlide].classList.remove('active');
-        currentSlide = index;
+        currentSlide = (currentSlide + 1) % slides.length;
         slides[currentSlide].classList.add('active');
         updateLogo();
     }
 
-    function showNextSlide() {
-        const nextIndex = (currentSlide + 1) % slides.length;
-        showSlide(nextIndex);
-    }
-
-    function showPrevSlide() {
-        const prevIndex = (currentSlide - 1 + slides.length) % slides.length;
-        showSlide(prevIndex);
-    }
-
-    // Start slideshow
+    // Start slideshow - AUTO ONLY, NO MANUAL NAVIGATION
     slides[0].classList.add('active');
     updateLogo();
-    let intervalId = setInterval(showNextSlide, slideInterval);
-
-    // Left/Right tap navigation for mobile
-    slideshowContainer.addEventListener('touchend', function(e) {
-        const containerWidth = slideshowContainer.offsetWidth;
-        const touchX = e.changedTouches[0].clientX;
-
-        // Reset interval
-        clearInterval(intervalId);
-        intervalId = setInterval(showNextSlide, slideInterval);
-
-        if (touchX < containerWidth / 2) {
-            showPrevSlide();
-        } else {
-            showNextSlide();
-        }
-    });
+    setInterval(showNextSlide, slideInterval);
 
     // Section handling - MOBILE TOUCH
     const aboutSection = document.getElementById('about-mobile');
@@ -376,6 +349,7 @@ function initMobile() {
 
     aboutLink.addEventListener('touchend', function(e) {
         e.preventDefault();
+        e.stopPropagation();
         if (aboutOpen) {
             closeAbout();
         } else {
@@ -385,6 +359,7 @@ function initMobile() {
 
     contactLink.addEventListener('touchend', function(e) {
         e.preventDefault();
+        e.stopPropagation();
         if (contactOpen) {
             closeContact();
         } else {
