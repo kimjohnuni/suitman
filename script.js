@@ -306,33 +306,22 @@ function initMobile() {
     function openAbout() {
         console.log('Opening about');
 
-        // CLEAR ALL TIMEOUTS
-        if (aboutCloseTimeout) {
-            clearTimeout(aboutCloseTimeout);
-            aboutCloseTimeout = null;
-        }
-        if (contactCloseTimeout) {
-            clearTimeout(contactCloseTimeout);
-            contactCloseTimeout = null;
-        }
+        if (aboutCloseTimeout) clearTimeout(aboutCloseTimeout);
+        if (contactCloseTimeout) clearTimeout(contactCloseTimeout);
 
-        // IMMEDIATELY reset about section - remove any hide animation
-        aboutSection.classList.remove('show', 'hide');
-        aboutSection.style.display = 'none';
-        aboutSection.className = 'content-section';
-
-        // Close contact
+        // Close contact instantly
         contactSection.style.display = 'none';
         contactSection.className = 'content-section';
         contactOpen = false;
 
-        // Small delay then show fresh
+        // DELAY showing the section so tap is fully complete
         setTimeout(() => {
             aboutSection.style.display = 'block';
+            aboutSection.className = 'content-section';
             void aboutSection.offsetHeight;
             aboutSection.classList.add('show');
             aboutOpen = true;
-        }, 50);
+        }, 50); // 50ms delay
     }
 
     function closeAbout() {
@@ -354,33 +343,22 @@ function initMobile() {
     function openContact() {
         console.log('Opening contact');
 
-        // CLEAR ALL TIMEOUTS
-        if (aboutCloseTimeout) {
-            clearTimeout(aboutCloseTimeout);
-            aboutCloseTimeout = null;
-        }
-        if (contactCloseTimeout) {
-            clearTimeout(contactCloseTimeout);
-            contactCloseTimeout = null;
-        }
+        if (aboutCloseTimeout) clearTimeout(aboutCloseTimeout);
+        if (contactCloseTimeout) clearTimeout(contactCloseTimeout);
 
-        // IMMEDIATELY reset contact section - remove any hide animation
-        contactSection.classList.remove('show', 'hide');
-        contactSection.style.display = 'none';
-        contactSection.className = 'content-section';
-
-        // Close about
+        // Close about instantly
         aboutSection.style.display = 'none';
         aboutSection.className = 'content-section';
         aboutOpen = false;
 
-        // Small delay then show fresh
+        // DELAY showing the section so tap is fully complete
         setTimeout(() => {
             contactSection.style.display = 'block';
+            contactSection.className = 'content-section';
             void contactSection.offsetHeight;
             contactSection.classList.add('show');
             contactOpen = true;
-        }, 50);
+        }, 50); // 50ms delay
     }
 
     function closeContact() {
@@ -422,7 +400,7 @@ function initMobile() {
         }
     });
 
-    // Section click to close
+    // Section click to close - ONLY if section is actually open
     aboutSection.addEventListener('click', function(e) {
         if (e.target.id === 'emailLink-mobile' ||
             e.target.id === 'copyBtn-mobile' ||
@@ -433,6 +411,7 @@ function initMobile() {
 
         console.log('About section clicked, open:', aboutOpen);
 
+        // Only close if it's been open for at least 100ms
         if (aboutOpen) {
             closeAbout();
         }
@@ -448,6 +427,7 @@ function initMobile() {
 
         console.log('Contact section clicked, open:', contactOpen);
 
+        // Only close if it's been open for at least 100ms
         if (contactOpen) {
             closeContact();
         }
