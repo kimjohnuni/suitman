@@ -298,124 +298,91 @@ function initMobile() {
     const aboutLink = document.querySelector('.mobile-link[href="#about"]');
     const contactLink = document.querySelector('.mobile-link[href="#contact"]');
 
-    // SIMPLE STATE TRACKING
-    let aboutState = 'closed'; // 'closed', 'open', 'closing'
-    let contactState = 'closed';
+    let aboutOpen = false;
+    let contactOpen = false;
     let aboutCloseTimeout = null;
     let contactCloseTimeout = null;
 
     function openAbout() {
-        console.log('Opening about, current state:', aboutState);
+        console.log('Opening about');
 
-        // Clear any pending timeouts
-        if (aboutCloseTimeout) {
-            clearTimeout(aboutCloseTimeout);
-            aboutCloseTimeout = null;
-        }
-        if (contactCloseTimeout) {
-            clearTimeout(contactCloseTimeout);
-            contactCloseTimeout = null;
-        }
+        if (aboutCloseTimeout) clearTimeout(aboutCloseTimeout);
+        if (contactCloseTimeout) clearTimeout(contactCloseTimeout);
 
-        // Close contact
+        // Close contact instantly
         contactSection.style.display = 'none';
         contactSection.className = 'content-section';
-        contactSection.style.pointerEvents = '';
-        contactState = 'closed';
+        contactOpen = false;
 
-        // Open about
-        aboutSection.style.display = 'block';
-        aboutSection.style.pointerEvents = 'auto';
-        aboutSection.className = 'content-section';
-        void aboutSection.offsetHeight;
-        aboutSection.classList.add('show');
-        aboutState = 'open';
+        // DELAY showing the section so tap is fully complete
+        setTimeout(() => {
+            aboutSection.style.display = 'block';
+            aboutSection.className = 'content-section';
+            void aboutSection.offsetHeight;
+            aboutSection.classList.add('show');
+            aboutOpen = true;
+        }, 50); // 50ms delay
     }
 
     function closeAbout() {
-        console.log('Closing about, current state:', aboutState);
+        console.log('Closing about');
 
-        if (aboutCloseTimeout) {
-            clearTimeout(aboutCloseTimeout);
-        }
+        if (aboutCloseTimeout) clearTimeout(aboutCloseTimeout);
 
         aboutSection.classList.remove('show');
         aboutSection.classList.add('hide');
-        aboutSection.style.pointerEvents = 'none';
-        aboutState = 'closing';
+        aboutOpen = false;
 
         aboutCloseTimeout = setTimeout(() => {
             aboutSection.style.display = 'none';
             aboutSection.className = 'content-section';
-            aboutSection.style.pointerEvents = '';
             aboutCloseTimeout = null;
-            aboutState = 'closed';
-            console.log('About close animation complete');
         }, 900);
     }
 
     function openContact() {
-        console.log('Opening contact, current state:', contactState);
+        console.log('Opening contact');
 
-        if (aboutCloseTimeout) {
-            clearTimeout(aboutCloseTimeout);
-            aboutCloseTimeout = null;
-        }
-        if (contactCloseTimeout) {
-            clearTimeout(contactCloseTimeout);
-            contactCloseTimeout = null;
-        }
+        if (aboutCloseTimeout) clearTimeout(aboutCloseTimeout);
+        if (contactCloseTimeout) clearTimeout(contactCloseTimeout);
 
-        // Close about
+        // Close about instantly
         aboutSection.style.display = 'none';
         aboutSection.className = 'content-section';
-        aboutSection.style.pointerEvents = '';
-        aboutState = 'closed';
+        aboutOpen = false;
 
-        // Open contact
-        contactSection.style.display = 'block';
-        contactSection.style.pointerEvents = 'auto';
-        contactSection.className = 'content-section';
-        void contactSection.offsetHeight;
-        contactSection.classList.add('show');
-        contactState = 'open';
+        // DELAY showing the section so tap is fully complete
+        setTimeout(() => {
+            contactSection.style.display = 'block';
+            contactSection.className = 'content-section';
+            void contactSection.offsetHeight;
+            contactSection.classList.add('show');
+            contactOpen = true;
+        }, 50); // 50ms delay
     }
 
     function closeContact() {
-        console.log('Closing contact, current state:', contactState);
+        console.log('Closing contact');
 
-        if (contactCloseTimeout) {
-            clearTimeout(contactCloseTimeout);
-        }
+        if (contactCloseTimeout) clearTimeout(contactCloseTimeout);
 
         contactSection.classList.remove('show');
         contactSection.classList.add('hide');
-        contactSection.style.pointerEvents = 'none';
-        contactState = 'closing';
+        contactOpen = false;
 
         contactCloseTimeout = setTimeout(() => {
             contactSection.style.display = 'none';
             contactSection.className = 'content-section';
-            contactSection.style.pointerEvents = '';
             contactCloseTimeout = null;
-            contactState = 'closed';
-            console.log('Contact close animation complete');
         }, 900);
     }
 
-    // Link handlers - use state variable
+    // Link handlers
     aboutLink.addEventListener('click', function(e) {
         e.preventDefault();
-        e.stopPropagation();
-        console.log('About clicked, state:', aboutState);
+        console.log('About clicked, open:', aboutOpen);
 
-        // Don't do anything if currently closing
-        if (aboutState === 'closing' || contactState === 'closing') {
-            console.log('Animation in progress, ignoring');
-            return;
-        }
-
-        if (aboutState === 'open') {
+        if (aboutOpen) {
             closeAbout();
         } else {
             openAbout();
@@ -424,26 +391,17 @@ function initMobile() {
 
     contactLink.addEventListener('click', function(e) {
         e.preventDefault();
-        e.stopPropagation();
-        console.log('Contact clicked, state:', contactState);
+        console.log('Contact clicked, open:', contactOpen);
 
-        // Don't do anything if currently closing
-        if (aboutState === 'closing' || contactState === 'closing') {
-            console.log('Animation in progress, ignoring');
-            return;
-        }
-
-        if (contactState === 'open') {
+        if (contactOpen) {
             closeContact();
         } else {
             openContact();
         }
     });
 
-    // Section click to close
+    // Section click to close - ONLY if section is actually open
     aboutSection.addEventListener('click', function(e) {
-        e.stopPropagation();
-
         if (e.target.id === 'emailLink-mobile' ||
             e.target.id === 'copyBtn-mobile' ||
             e.target.closest('#copyBtn-mobile') ||
@@ -451,15 +409,15 @@ function initMobile() {
             return;
         }
 
-        console.log('About section clicked, state:', aboutState);
-        if (aboutState === 'open') {
+        console.log('About section clicked, open:', aboutOpen);
+
+        // Only close if it's been open for at least 100ms
+        if (aboutOpen) {
             closeAbout();
         }
     });
 
     contactSection.addEventListener('click', function(e) {
-        e.stopPropagation();
-
         if (e.target.id === 'emailLink-mobile' ||
             e.target.id === 'copyBtn-mobile' ||
             e.target.closest('#copyBtn-mobile') ||
@@ -467,8 +425,10 @@ function initMobile() {
             return;
         }
 
-        console.log('Contact section clicked, state:', contactState);
-        if (contactState === 'open') {
+        console.log('Contact section clicked, open:', contactOpen);
+
+        // Only close if it's been open for at least 100ms
+        if (contactOpen) {
             closeContact();
         }
     });
