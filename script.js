@@ -20,6 +20,7 @@ function initDesktop() {
 
     const logoContainer = document.querySelector('#desktop-version .logo-container');
     const navContainer = document.querySelector('#desktop-version .nav-container');
+    const slideshowContainer = document.querySelector('#desktop-version .slideshow-container');
     const slides = document.querySelectorAll('.desktop-slide');
 
     let currentSlide = 0;
@@ -48,17 +49,56 @@ function initDesktop() {
         }
     }
 
-    function showNextSlide() {
+    function showSlide(index) {
         slides[currentSlide].classList.remove('active');
-        currentSlide = (currentSlide + 1) % slides.length;
+        currentSlide = index;
         slides[currentSlide].classList.add('active');
         updateLogo();
+    }
+
+    function showNextSlide() {
+        const nextIndex = (currentSlide + 1) % slides.length;
+        showSlide(nextIndex);
+    }
+
+    function showPrevSlide() {
+        const prevIndex = (currentSlide - 1 + slides.length) % slides.length;
+        showSlide(prevIndex);
     }
 
     // Start slideshow
     slides[0].classList.add('active');
     updateLogo();
-    setInterval(showNextSlide, slideInterval);
+    let intervalId = setInterval(showNextSlide, slideInterval);
+
+    // Left/Right click navigation
+    slideshowContainer.addEventListener('mousemove', function(e) {
+        const containerWidth = slideshowContainer.offsetWidth;
+        const clickX = e.clientX;
+
+        if (clickX < containerWidth / 2) {
+            slideshowContainer.classList.remove('right-cursor');
+            slideshowContainer.classList.add('left-cursor');
+        } else {
+            slideshowContainer.classList.remove('left-cursor');
+            slideshowContainer.classList.add('right-cursor');
+        }
+    });
+
+    slideshowContainer.addEventListener('click', function(e) {
+        const containerWidth = slideshowContainer.offsetWidth;
+        const clickX = e.clientX;
+
+        // Reset interval
+        clearInterval(intervalId);
+        intervalId = setInterval(showNextSlide, slideInterval);
+
+        if (clickX < containerWidth / 2) {
+            showPrevSlide();
+        } else {
+            showNextSlide();
+        }
+    });
 
     // Section handling
     const aboutSection = document.getElementById('about-desktop');
@@ -151,34 +191,44 @@ function initDesktop() {
         }
     });
 
-    // Close on background click
+    // Close on click anywhere in section (including text)
     aboutSection.addEventListener('click', function(e) {
-        if (e.target.classList.contains('scrollable-area') ||
-            e.target.classList.contains('content-section')) {
-            if (aboutSection.getAttribute('data-state') === 'open') {
-                aboutSection.setAttribute('data-state', 'closed');
-                aboutSection.classList.remove('show');
-                aboutSection.classList.add('hide');
-                setTimeout(() => {
-                    aboutSection.style.display = 'none';
-                    aboutSection.className = 'content-section';
-                }, 800);
-            }
+        // Don't close if clicking email link or copy button
+        if (e.target.id === 'emailLink-desktop' ||
+            e.target.id === 'copyBtn-desktop' ||
+            e.target.closest('#copyBtn-desktop') ||
+            e.target.closest('#emailLink-desktop')) {
+            return;
+        }
+
+        if (aboutSection.getAttribute('data-state') === 'open') {
+            aboutSection.setAttribute('data-state', 'closed');
+            aboutSection.classList.remove('show');
+            aboutSection.classList.add('hide');
+            setTimeout(() => {
+                aboutSection.style.display = 'none';
+                aboutSection.className = 'content-section';
+            }, 800);
         }
     });
 
     contactSection.addEventListener('click', function(e) {
-        if (e.target.classList.contains('scrollable-area') ||
-            e.target.classList.contains('content-section')) {
-            if (contactSection.getAttribute('data-state') === 'open') {
-                contactSection.setAttribute('data-state', 'closed');
-                contactSection.classList.remove('show');
-                contactSection.classList.add('hide');
-                setTimeout(() => {
-                    contactSection.style.display = 'none';
-                    contactSection.className = 'content-section';
-                }, 800);
-            }
+        // Don't close if clicking email link or copy button
+        if (e.target.id === 'emailLink-desktop' ||
+            e.target.id === 'copyBtn-desktop' ||
+            e.target.closest('#copyBtn-desktop') ||
+            e.target.closest('#emailLink-desktop')) {
+            return;
+        }
+
+        if (contactSection.getAttribute('data-state') === 'open') {
+            contactSection.setAttribute('data-state', 'closed');
+            contactSection.classList.remove('show');
+            contactSection.classList.add('hide');
+            setTimeout(() => {
+                contactSection.style.display = 'none';
+                contactSection.className = 'content-section';
+            }, 800);
         }
     });
 
@@ -202,6 +252,7 @@ function initMobile() {
 
     const logoContainer = document.querySelector('#mobile-version .logo-container');
     const navContainer = document.querySelector('#mobile-version .nav-container');
+    const slideshowContainer = document.querySelector('#mobile-version .slideshow-container');
     const slides = document.querySelectorAll('.mobile-slide');
 
     let currentSlide = 0;
@@ -230,17 +281,43 @@ function initMobile() {
         }
     }
 
-    function showNextSlide() {
+    function showSlide(index) {
         slides[currentSlide].classList.remove('active');
-        currentSlide = (currentSlide + 1) % slides.length;
+        currentSlide = index;
         slides[currentSlide].classList.add('active');
         updateLogo();
+    }
+
+    function showNextSlide() {
+        const nextIndex = (currentSlide + 1) % slides.length;
+        showSlide(nextIndex);
+    }
+
+    function showPrevSlide() {
+        const prevIndex = (currentSlide - 1 + slides.length) % slides.length;
+        showSlide(prevIndex);
     }
 
     // Start slideshow
     slides[0].classList.add('active');
     updateLogo();
-    setInterval(showNextSlide, slideInterval);
+    let intervalId = setInterval(showNextSlide, slideInterval);
+
+    // Left/Right tap navigation for mobile
+    slideshowContainer.addEventListener('touchend', function(e) {
+        const containerWidth = slideshowContainer.offsetWidth;
+        const touchX = e.changedTouches[0].clientX;
+
+        // Reset interval
+        clearInterval(intervalId);
+        intervalId = setInterval(showNextSlide, slideInterval);
+
+        if (touchX < containerWidth / 2) {
+            showPrevSlide();
+        } else {
+            showNextSlide();
+        }
+    });
 
     // Section handling - MOBILE TOUCH
     const aboutSection = document.getElementById('about-mobile');
@@ -315,22 +392,32 @@ function initMobile() {
         }
     });
 
-    // Close on background tap
+    // Close on tap anywhere in section (including text)
     aboutSection.addEventListener('touchend', function(e) {
-        if (e.target.classList.contains('scrollable-area') ||
-            e.target.classList.contains('content-section')) {
-            if (aboutOpen) {
-                closeAbout();
-            }
+        // Don't close if tapping email link or copy button
+        if (e.target.id === 'emailLink-mobile' ||
+            e.target.id === 'copyBtn-mobile' ||
+            e.target.closest('#copyBtn-mobile') ||
+            e.target.closest('#emailLink-mobile')) {
+            return;
+        }
+
+        if (aboutOpen) {
+            closeAbout();
         }
     });
 
     contactSection.addEventListener('touchend', function(e) {
-        if (e.target.classList.contains('scrollable-area') ||
-            e.target.classList.contains('content-section')) {
-            if (contactOpen) {
-                closeContact();
-            }
+        // Don't close if tapping email link or copy button
+        if (e.target.id === 'emailLink-mobile' ||
+            e.target.id === 'copyBtn-mobile' ||
+            e.target.closest('#copyBtn-mobile') ||
+            e.target.closest('#emailLink-mobile')) {
+            return;
+        }
+
+        if (contactOpen) {
+            closeContact();
         }
     });
 
