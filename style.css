@@ -151,6 +151,7 @@ html, body {
 .content-section.show.crossfade { z-index: 1001; }
 
 .content-section .scrollable-area {
+  cursor: pointer;
     position: absolute;
     bottom: 0;
     left: 0;
