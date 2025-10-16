@@ -301,18 +301,29 @@ function initMobile() {
     let aboutCloseTimeout = null;
     let contactCloseTimeout = null;
 
+    // Check if section is open by checking DOM state
+    function isOpen(section) {
+        return section.style.display === 'block' && section.classList.contains('show');
+    }
+
     function openAbout() {
         console.log('Opening about');
 
-        if (aboutCloseTimeout) clearTimeout(aboutCloseTimeout);
-        if (contactCloseTimeout) clearTimeout(contactCloseTimeout);
+        if (aboutCloseTimeout) {
+            clearTimeout(aboutCloseTimeout);
+            aboutCloseTimeout = null;
+        }
+        if (contactCloseTimeout) {
+            clearTimeout(contactCloseTimeout);
+            contactCloseTimeout = null;
+        }
 
         contactSection.style.display = 'none';
         contactSection.className = 'content-section';
         contactSection.style.pointerEvents = '';
 
         aboutSection.style.display = 'block';
-        aboutSection.style.pointerEvents = 'auto'; // Enable touches
+        aboutSection.style.pointerEvents = 'auto';
         aboutSection.className = 'content-section';
         void aboutSection.offsetHeight;
         aboutSection.classList.add('show');
@@ -321,16 +332,18 @@ function initMobile() {
     function closeAbout() {
         console.log('Closing about');
 
-        if (aboutCloseTimeout) clearTimeout(aboutCloseTimeout);
+        if (aboutCloseTimeout) {
+            clearTimeout(aboutCloseTimeout);
+        }
 
         aboutSection.classList.remove('show');
         aboutSection.classList.add('hide');
-        aboutSection.style.pointerEvents = 'none'; // IMMEDIATELY stop catching touches
+        aboutSection.style.pointerEvents = 'none';
 
         aboutCloseTimeout = setTimeout(() => {
             aboutSection.style.display = 'none';
             aboutSection.className = 'content-section';
-            aboutSection.style.pointerEvents = ''; // Reset
+            aboutSection.style.pointerEvents = '';
             aboutCloseTimeout = null;
         }, 900);
     }
@@ -338,15 +351,21 @@ function initMobile() {
     function openContact() {
         console.log('Opening contact');
 
-        if (aboutCloseTimeout) clearTimeout(aboutCloseTimeout);
-        if (contactCloseTimeout) clearTimeout(contactCloseTimeout);
+        if (aboutCloseTimeout) {
+            clearTimeout(aboutCloseTimeout);
+            aboutCloseTimeout = null;
+        }
+        if (contactCloseTimeout) {
+            clearTimeout(contactCloseTimeout);
+            contactCloseTimeout = null;
+        }
 
         aboutSection.style.display = 'none';
         aboutSection.className = 'content-section';
         aboutSection.style.pointerEvents = '';
 
         contactSection.style.display = 'block';
-        contactSection.style.pointerEvents = 'auto'; // Enable touches
+        contactSection.style.pointerEvents = 'auto';
         contactSection.className = 'content-section';
         void contactSection.offsetHeight;
         contactSection.classList.add('show');
@@ -355,40 +374,51 @@ function initMobile() {
     function closeContact() {
         console.log('Closing contact');
 
-        if (contactCloseTimeout) clearTimeout(contactCloseTimeout);
+        if (contactCloseTimeout) {
+            clearTimeout(contactCloseTimeout);
+        }
 
         contactSection.classList.remove('show');
         contactSection.classList.add('hide');
-        contactSection.style.pointerEvents = 'none'; // IMMEDIATELY stop catching touches
+        contactSection.style.pointerEvents = 'none';
 
         contactCloseTimeout = setTimeout(() => {
             contactSection.style.display = 'none';
             contactSection.className = 'content-section';
-            contactSection.style.pointerEvents = ''; // Reset
+            contactSection.style.pointerEvents = '';
             contactCloseTimeout = null;
         }, 900);
     }
 
-    // Link handlers
+    // Link handlers with TOGGLE logic
     aboutLink.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        console.log('About clicked');
-        openAbout();
+        console.log('About clicked, isOpen:', isOpen(aboutSection));
+
+        if (isOpen(aboutSection)) {
+            closeAbout();
+        } else {
+            openAbout();
+        }
     });
 
     contactLink.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        console.log('Contact clicked');
-        openContact();
+        console.log('Contact clicked, isOpen:', isOpen(contactSection));
+
+        if (isOpen(contactSection)) {
+            closeContact();
+        } else {
+            openContact();
+        }
     });
 
     // Section click to close
     aboutSection.addEventListener('click', function(e) {
         e.stopPropagation();
 
-        // Don't close if clicking on interactive elements
         if (e.target.id === 'emailLink-mobile' ||
             e.target.id === 'copyBtn-mobile' ||
             e.target.closest('#copyBtn-mobile') ||
@@ -403,7 +433,6 @@ function initMobile() {
     contactSection.addEventListener('click', function(e) {
         e.stopPropagation();
 
-        // Don't close if clicking on interactive elements
         if (e.target.id === 'emailLink-mobile' ||
             e.target.id === 'copyBtn-mobile' ||
             e.target.closest('#copyBtn-mobile') ||
