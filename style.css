@@ -285,10 +285,34 @@ body {
 
 .email-text {
     font-family: 'Roboto', sans-serif;
+    text-decoration: none !important;
     font-weight: 300;
     font-size: 13px;
     color: #333;
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    color: #333;
 }
+
+.email-text::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 100%;
+    height: 1px;
+    background: #000;
+    transform: scaleX(0);
+    transform-origin: bottom left;
+    transition: transform 0.25s cubic-bezier(0.77,0,0.175,1);
+}
+
+.email-text:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+}
+
 
 .copy-button {
     background-color: transparent;
@@ -772,7 +796,7 @@ body {
         transform: translate(-50%, -50%) rotate(0deg);
         opacity: 0;
         transition: opacity 0.3s ease, transform 0.3s ease;
-        font-size: 16px;
+        font-size: 10px;
         font-weight: 200;
         letter-spacing: -1px;
     }
