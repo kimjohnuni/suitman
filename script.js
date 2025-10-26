@@ -1,449 +1,288 @@
-// Detect device type FIRST
-const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
-
-// Add class to body to show correct version
-document.body.classList.add(isMobileDevice ? 'is-mobile' : 'is-desktop');
-
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Device type:', isMobileDevice ? 'Mobile' : 'Desktop');
+    const desktopSlides = document.querySelectorAll('.desktop-slider .slide');
+    const mobileSlides = document.querySelectorAll('.mobile-slider .slide');
+    const whiteLogo = document.querySelector('.white-logo');
+    const blackLogo = document.querySelector('.black-logo');
+    const navLeft = document.querySelector('.nav-left');
+    const navRight = document.querySelector('.nav-right');
+    const mobileSlider = document.querySelector('.mobile-slider');
 
-    if (isMobileDevice) {
-        initMobile();
-    } else {
-        initDesktop();
+    let currentSlide = 0;
+    let isAnimating = false;
+    let autoSlideInterval;
+    const slideInterval = 6000;
+    const isMobile = window.innerWidth <= 768;
+
+    // Desktop logo colors (for horizontal images)
+    const desktopLogoColors = [
+        'white',  // 01. ICELAND.jpg
+        'white',  // 01. MYANMAR.jpg
+        'black',  // 02. BRAZIL.jpg
+        'black',  // 02. INDIA.jpg
+        'white',  // 03. ATHENS.jpg
+        'white',  // 03. TIBET.jpg
+        'white',  // 04. MONGOLIA.jpg
+        'white',  // 04. USA.jpg
+        'black',  // 05. NEW ZEALAND.jpg
+        'white',  // 05. USA.jpg (2)
+        'black',  // 06. EGYPT.jpg
+        'black',  // 06. USA_.jpg
+        'white',  // 07. BEIJING.jpg
+        'black',  // 07. JAPAN.jpg
+        'white',  // 08. BUSAN.jpg
+        'white',  // 08. EGYPT.jpg (2)
+        'black',  // 09. FIGURES.jpg
+        'black',  // 10. GREECE.jpg
+        'white'   // 11. HK.jpg
+    ];
+
+    // Mobile logo colors (for vertical images)
+    const mobileLogoColors = [
+        'white',  // 01. ICELAND.jpg
+        'black',  // 02. ABOUT_01.jpg
+        'white',  // 03. MONGOLIA.jpg
+        'white',  // 05. BAHARIYA.jpg
+        'black',  // 06. EGYPT.jpg
+        'white'   // 07. ATHENS.jpg
+    ];
+
+    // Choose the appropriate slides and logo colors based on screen size
+    const slides = isMobile ? mobileSlides : desktopSlides;
+    const logoColors = isMobile ? mobileLogoColors : desktopLogoColors;
+
+    // Initialize first slide as visible
+    if (slides.length > 0) {
+        slides[0].classList.add('active');
+        slides[0].style.opacity = '1';
+        slides[0].style.visibility = 'visible';
+        if (isMobile) {
+            slides[0].style.transform = 'translateY(0)';
+        }
+    }
+
+    function switchLogo(color) {
+        if (color === 'white') {
+            whiteLogo.style.opacity = '1';
+            blackLogo.style.opacity = '0';
+        } else {
+            whiteLogo.style.opacity = '0';
+            blackLogo.style.opacity = '1';
+        }
+    }
+
+    function goToSlide(nextIndex, direction = 'forward') {
+        if (isAnimating) return;
+        isAnimating = true;
+
+        // Reset auto-slide timer
+        clearInterval(autoSlideInterval);
+        startAutoSlide();
+
+        const current = slides[currentSlide];
+        const next = slides[nextIndex];
+
+        // Make next slide visible immediately to prevent black gaps
+        next.style.opacity = '1';
+        next.style.visibility = 'visible';
+
+        // Switch logo at the start of animation for mobile, middle for desktop
+        if (isMobile) {
+            switchLogo(logoColors[nextIndex]);
+        }
+
+        if (direction === 'forward') {
+            current.classList.add('sliding-out');
+            next.classList.add('sliding-in');
+        } else {
+            current.classList.add('sliding-out-reverse');
+            next.classList.add('sliding-in-reverse');
+        }
+
+        // Switch logo in the middle for desktop
+        if (!isMobile) {
+            setTimeout(() => {
+                switchLogo(logoColors[nextIndex]);
+            }, 200);
+        }
+
+        setTimeout(() => {
+            current.classList.remove('active', 'sliding-out', 'sliding-out-reverse');
+            current.style.opacity = '0';
+            current.style.visibility = 'hidden';
+
+            next.classList.remove('sliding-in', 'sliding-in-reverse');
+            next.classList.add('active');
+
+            currentSlide = nextIndex;
+            isAnimating = false;
+        }, 1000);
+    }
+
+    function nextSlide() {
+        const nextIndex = (currentSlide + 1) % slides.length;
+        goToSlide(nextIndex, 'forward');
+    }
+
+    function startAutoSlide() {
+        autoSlideInterval = setInterval(nextSlide, slideInterval);
+    }
+
+    // Desktop click navigation
+    if (!isMobile && navLeft && navRight) {
+        navLeft.addEventListener('click', function() {
+            const prevIndex = (currentSlide - 1 + slides.length) % slides.length;
+            goToSlide(prevIndex, 'backward');
+        });
+
+        navRight.addEventListener('click', function() {
+            const nextIndex = (currentSlide + 1) % slides.length;
+            goToSlide(nextIndex, 'forward');
+        });
+    }
+
+    // Mobile touch swipe
+    if (isMobile && mobileSlider) {
+        let touchStartY = 0;
+        let touchEndY = 0;
+
+        mobileSlider.addEventListener('touchstart', function(e) {
+            touchStartY = e.changedTouches[0].screenY;
+        }, false);
+
+        mobileSlider.addEventListener('touchend', function(e) {
+            touchEndY = e.changedTouches[0].screenY;
+            handleSwipe();
+        }, false);
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartY - touchEndY;
+
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    // Swiped up - go forward
+                    const nextIndex = (currentSlide + 1) % slides.length;
+                    goToSlide(nextIndex, 'forward');
+                } else {
+                    // Swiped down - go backward
+                    const prevIndex = (currentSlide - 1 + slides.length) % slides.length;
+                    goToSlide(prevIndex, 'backward');
+                }
+            }
+        }
+    }
+
+    // Set initial logo color
+    switchLogo(logoColors[0]);
+
+    // Start auto-advance slides
+    startAutoSlide();
+
+    // Desktop About/Contact Panel Toggle
+    const aboutTab = document.getElementById('aboutTab');
+    const contactTab = document.getElementById('contactTab');
+    const aboutPanel = document.getElementById('aboutPanel');
+    const contactPanel = document.getElementById('contactPanel');
+
+    if (aboutTab) {
+        aboutTab.addEventListener('click', function() {
+            const isOpen = aboutPanel.classList.contains('open');
+            aboutPanel.classList.toggle('open');
+            aboutTab.classList.toggle('active');
+
+            if (!isOpen) {
+                // Opening ABOUT - slide CONTACT tab out to the left
+                contactPanel.classList.remove('open');
+                contactTab.classList.remove('active');
+                contactTab.style.transition = 'transform 0.3s ease';
+                contactTab.style.transform = 'translateX(-100%)';
+                contactTab.style.pointerEvents = 'none';
+            } else {
+                // Closing ABOUT - slide in CONTACT tab from left
+                setTimeout(function() {
+                    contactTab.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                    contactTab.style.transform = 'translateX(100%)';
+                    contactTab.style.pointerEvents = 'auto';
+                }, 400);
+            }
+        });
+    }
+
+    if (contactTab) {
+        contactTab.addEventListener('click', function() {
+            const isOpen = contactPanel.classList.contains('open');
+            contactPanel.classList.toggle('open');
+            contactTab.classList.toggle('active');
+
+            if (!isOpen) {
+                // Opening CONTACT - slide ABOUT tab out to the left
+                aboutPanel.classList.remove('open');
+                aboutTab.classList.remove('active');
+                aboutTab.style.transition = 'transform 0.3s ease';
+                aboutTab.style.transform = 'translateX(-100%)';
+                aboutTab.style.pointerEvents = 'none';
+            } else {
+                // Closing CONTACT - slide in ABOUT tab from left
+                setTimeout(function() {
+                    aboutTab.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                    aboutTab.style.transform = 'translateX(100%)';
+                    aboutTab.style.pointerEvents = 'auto';
+                }, 400);
+            }
+        });
+    }
+
+    // Mobile Tabs functionality - EXACTLY like desktop
+    const mobileAboutTab = document.getElementById('mobileAboutTab');
+    const mobileContactTab = document.getElementById('mobileContactTab');
+    const mobileAboutPanel = document.getElementById('mobileAboutPanel');
+    const mobileContactPanel = document.getElementById('mobileContactPanel');
+
+    if (isMobile && mobileAboutTab) {
+        mobileAboutTab.addEventListener('click', function() {
+            const isOpen = mobileAboutPanel.classList.contains('open');
+            mobileAboutPanel.classList.toggle('open');
+            mobileAboutTab.classList.toggle('active');
+
+            if (!isOpen) {
+                // Opening ABOUT - slide CONTACT tab out to the left
+                mobileContactPanel.classList.remove('open');
+                mobileContactTab.classList.remove('active');
+                mobileContactTab.style.transition = 'transform 0.3s ease';
+                mobileContactTab.style.transform = 'translateX(-100%)';
+                mobileContactTab.style.pointerEvents = 'none';
+            } else {
+                // Closing ABOUT - slide in CONTACT tab from left
+                setTimeout(function() {
+                    mobileContactTab.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                    mobileContactTab.style.transform = 'translateX(100%)';
+                    mobileContactTab.style.pointerEvents = 'auto';
+                }, 400);
+            }
+        });
+    }
+
+    if (isMobile && mobileContactTab) {
+        mobileContactTab.addEventListener('click', function() {
+            const isOpen = mobileContactPanel.classList.contains('open');
+            mobileContactPanel.classList.toggle('open');
+            mobileContactTab.classList.toggle('active');
+
+            if (!isOpen) {
+                // Opening CONTACT - slide ABOUT tab out to the left
+                mobileAboutPanel.classList.remove('open');
+                mobileAboutTab.classList.remove('active');
+                mobileAboutTab.style.transition = 'transform 0.3s ease';
+                mobileAboutTab.style.transform = 'translateX(-100%)';
+                mobileAboutTab.style.pointerEvents = 'none';
+            } else {
+                // Closing CONTACT - slide in ABOUT tab from left
+                setTimeout(function() {
+                    mobileAboutTab.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                    mobileAboutTab.style.transform = 'translateX(100%)';
+                    mobileAboutTab.style.pointerEvents = 'auto';
+                }, 400);
+            }
+        });
     }
 });
-
-// ========== DESKTOP INITIALIZATION ==========
-function initDesktop() {
-    console.log('Initializing desktop version');
-
-    const logoContainer = document.querySelector('#desktop-version .logo-container');
-    const navContainer = document.querySelector('#desktop-version .nav-container');
-    const slideshowContainer = document.querySelector('#desktop-version .slideshow-container');
-    const slides = document.querySelectorAll('.desktop-slide');
-
-    let currentSlide = 0;
-    const slideInterval = 6000;
-
-    const logoSettings = [
-        false, true, false, true, true, true, false, false, true, true, false
-    ];
-
-    // Load images
-    slides.forEach(slide => {
-        const img = slide.getAttribute('data-desktop');
-        slide.style.backgroundImage = `url('${img}')`;
-    });
-
-    function updateLogo() {
-        logoContainer.classList.remove('bright-background', 'dark-background');
-        navContainer.classList.remove('bright-background', 'dark-background');
-
-        if (logoSettings[currentSlide]) {
-            logoContainer.classList.add('bright-background');
-            navContainer.classList.add('bright-background');
-        } else {
-            logoContainer.classList.add('dark-background');
-            navContainer.classList.add('dark-background');
-        }
-    }
-
-    function showSlide(index) {
-        slides[currentSlide].classList.remove('active');
-        currentSlide = index;
-        slides[currentSlide].classList.add('active');
-        updateLogo();
-    }
-
-    function showNextSlide() {
-        const nextIndex = (currentSlide + 1) % slides.length;
-        showSlide(nextIndex);
-    }
-
-    function showPrevSlide() {
-        const prevIndex = (currentSlide - 1 + slides.length) % slides.length;
-        showSlide(prevIndex);
-    }
-
-    // Start slideshow
-    slides[0].classList.add('active');
-    updateLogo();
-    let intervalId = setInterval(showNextSlide, slideInterval);
-
-    // Left/Right click navigation
-    slideshowContainer.addEventListener('mousemove', function(e) {
-        const containerWidth = slideshowContainer.offsetWidth;
-        const clickX = e.clientX;
-
-        if (clickX < containerWidth / 2) {
-            slideshowContainer.classList.remove('right-cursor');
-            slideshowContainer.classList.add('left-cursor');
-        } else {
-            slideshowContainer.classList.remove('left-cursor');
-            slideshowContainer.classList.add('right-cursor');
-        }
-    });
-
-    slideshowContainer.addEventListener('click', function(e) {
-        const containerWidth = slideshowContainer.offsetWidth;
-        const clickX = e.clientX;
-
-        // Reset interval
-        clearInterval(intervalId);
-        intervalId = setInterval(showNextSlide, slideInterval);
-
-        if (clickX < containerWidth / 2) {
-            showPrevSlide();
-        } else {
-            showNextSlide();
-        }
-    });
-
-    // Section handling
-    const aboutSection = document.getElementById('about-desktop');
-    const contactSection = document.getElementById('contact-desktop');
-    const aboutLink = document.querySelector('.desktop-link[href="#about"]');
-    const contactLink = document.querySelector('.desktop-link[href="#contact"]');
-
-    aboutSection.setAttribute('data-state', 'closed');
-    contactSection.setAttribute('data-state', 'closed');
-
-    aboutLink.addEventListener('click', function(e) {
-        e.preventDefault();
-
-        const aboutState = aboutSection.getAttribute('data-state');
-        const contactState = contactSection.getAttribute('data-state');
-
-        if (aboutState === 'closed') {
-            if (contactState === 'open') {
-                // Crossfade
-                contactSection.setAttribute('data-state', 'closed');
-                contactSection.classList.remove('show');
-                contactSection.classList.add('hide');
-
-                aboutSection.setAttribute('data-state', 'open');
-                aboutSection.className = 'content-section crossfade';
-                aboutSection.style.display = 'block';
-                setTimeout(() => aboutSection.classList.add('show'), 10);
-
-                setTimeout(() => {
-                    contactSection.style.display = 'none';
-                    contactSection.className = 'content-section';
-                }, 800);
-            } else {
-                // Open
-                aboutSection.setAttribute('data-state', 'open');
-                aboutSection.className = 'content-section';
-                aboutSection.style.display = 'block';
-                setTimeout(() => aboutSection.classList.add('show'), 10);
-            }
-        } else {
-            // Close
-            aboutSection.setAttribute('data-state', 'closed');
-            aboutSection.classList.remove('show');
-            aboutSection.classList.add('hide');
-            setTimeout(() => {
-                aboutSection.style.display = 'none';
-                aboutSection.className = 'content-section';
-            }, 800);
-        }
-    });
-
-    contactLink.addEventListener('click', function(e) {
-        e.preventDefault();
-
-        const aboutState = aboutSection.getAttribute('data-state');
-        const contactState = contactSection.getAttribute('data-state');
-
-        if (contactState === 'closed') {
-            if (aboutState === 'open') {
-                // Crossfade
-                aboutSection.setAttribute('data-state', 'closed');
-                aboutSection.classList.remove('show');
-                aboutSection.classList.add('hide');
-
-                contactSection.setAttribute('data-state', 'open');
-                contactSection.className = 'content-section crossfade';
-                contactSection.style.display = 'block';
-                setTimeout(() => contactSection.classList.add('show'), 10);
-
-                setTimeout(() => {
-                    aboutSection.style.display = 'none';
-                    aboutSection.className = 'content-section';
-                }, 800);
-            } else {
-                // Open
-                contactSection.setAttribute('data-state', 'open');
-                contactSection.className = 'content-section';
-                contactSection.style.display = 'block';
-                setTimeout(() => contactSection.classList.add('show'), 10);
-            }
-        } else {
-            // Close
-            contactSection.setAttribute('data-state', 'closed');
-            contactSection.classList.remove('show');
-            contactSection.classList.add('hide');
-            setTimeout(() => {
-                contactSection.style.display = 'none';
-                contactSection.className = 'content-section';
-            }, 800);
-        }
-    });
-
-    // Close on click anywhere in section (including text)
-    aboutSection.addEventListener('click', function(e) {
-        // Don't close if clicking email link or copy button
-        if (e.target.id === 'emailLink-desktop' ||
-            e.target.id === 'copyBtn-desktop' ||
-            e.target.closest('#copyBtn-desktop') ||
-            e.target.closest('#emailLink-desktop')) {
-            return;
-        }
-
-        if (aboutSection.getAttribute('data-state') === 'open') {
-            aboutSection.setAttribute('data-state', 'closed');
-            aboutSection.classList.remove('show');
-            aboutSection.classList.add('hide');
-            setTimeout(() => {
-                aboutSection.style.display = 'none';
-                aboutSection.className = 'content-section';
-            }, 800);
-        }
-    });
-
-    contactSection.addEventListener('click', function(e) {
-        // Don't close if clicking email link or copy button
-        if (e.target.id === 'emailLink-desktop' ||
-            e.target.id === 'copyBtn-desktop' ||
-            e.target.closest('#copyBtn-desktop') ||
-            e.target.closest('#emailLink-desktop')) {
-            return;
-        }
-
-        if (contactSection.getAttribute('data-state') === 'open') {
-            contactSection.setAttribute('data-state', 'closed');
-            contactSection.classList.remove('show');
-            contactSection.classList.add('hide');
-            setTimeout(() => {
-                contactSection.style.display = 'none';
-                contactSection.className = 'content-section';
-            }, 800);
-        }
-    });
-
-    // Copy email
-    const copyBtn = document.getElementById('copyBtn-desktop');
-    if (copyBtn) {
-        copyBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const email = 'info@suitman.org';
-            navigator.clipboard.writeText(email).then(() => {
-                copyBtn.textContent = '✓';
-                setTimeout(() => copyBtn.textContent = '⧉', 2000);
-            });
-        });
-    }
-}
-
-// ========== MOBILE INITIALIZATION ==========
-function initMobile() {
-    console.log('Initializing mobile version');
-
-    const logoContainer = document.querySelector('#mobile-version .logo-container');
-    const navContainer = document.querySelector('#mobile-version .nav-container');
-    const slides = document.querySelectorAll('.mobile-slide');
-
-    let currentSlide = 0;
-    const slideInterval = 6000;
-
-    const logoSettings = [
-        true, true, true, false, true, false
-    ];
-
-    // Load images
-    slides.forEach(slide => {
-        const img = slide.getAttribute('data-mobile');
-        slide.style.backgroundImage = `url('${img}')`;
-    });
-
-    function updateLogo() {
-        logoContainer.classList.remove('bright-background', 'dark-background');
-        navContainer.classList.remove('bright-background', 'dark-background');
-
-        if (logoSettings[currentSlide]) {
-            logoContainer.classList.add('bright-background');
-            navContainer.classList.add('bright-background');
-        } else {
-            logoContainer.classList.add('dark-background');
-            navContainer.classList.add('dark-background');
-        }
-    }
-
-    function showNextSlide() {
-        slides[currentSlide].classList.remove('active');
-        currentSlide = (currentSlide + 1) % slides.length;
-        slides[currentSlide].classList.add('active');
-        updateLogo();
-    }
-
-    // Start slideshow - AUTO ONLY
-    slides[0].classList.add('active');
-    updateLogo();
-    setInterval(showNextSlide, slideInterval);
-
-    // Section handling
-    const aboutSection = document.getElementById('about-mobile');
-    const contactSection = document.getElementById('contact-mobile');
-    const aboutLink = document.querySelector('.mobile-link[href="#about"]');
-    const contactLink = document.querySelector('.mobile-link[href="#contact"]');
-
-    let aboutOpen = false;
-    let contactOpen = false;
-    let aboutCloseTimeout = null;
-    let contactCloseTimeout = null;
-
-    function openAbout() {
-        console.log('Opening about');
-
-        if (aboutCloseTimeout) clearTimeout(aboutCloseTimeout);
-        if (contactCloseTimeout) clearTimeout(contactCloseTimeout);
-
-        // Close contact instantly
-        contactSection.style.display = 'none';
-        contactSection.className = 'content-section';
-        contactOpen = false;
-
-        // DELAY showing the section so tap is fully complete
-        setTimeout(() => {
-            aboutSection.style.display = 'block';
-            aboutSection.className = 'content-section';
-            void aboutSection.offsetHeight;
-            aboutSection.classList.add('show');
-            aboutOpen = true;
-        }, 50); // 50ms delay
-    }
-
-    function closeAbout() {
-        console.log('Closing about');
-
-        if (aboutCloseTimeout) clearTimeout(aboutCloseTimeout);
-
-        aboutSection.classList.remove('show');
-        aboutSection.classList.add('hide');
-        aboutOpen = false;
-
-        aboutCloseTimeout = setTimeout(() => {
-            aboutSection.style.display = 'none';
-            aboutSection.className = 'content-section';
-            aboutCloseTimeout = null;
-        }, 900);
-    }
-
-    function openContact() {
-        console.log('Opening contact');
-
-        if (aboutCloseTimeout) clearTimeout(aboutCloseTimeout);
-        if (contactCloseTimeout) clearTimeout(contactCloseTimeout);
-
-        // Close about instantly
-        aboutSection.style.display = 'none';
-        aboutSection.className = 'content-section';
-        aboutOpen = false;
-
-        // DELAY showing the section so tap is fully complete
-        setTimeout(() => {
-            contactSection.style.display = 'block';
-            contactSection.className = 'content-section';
-            void contactSection.offsetHeight;
-            contactSection.classList.add('show');
-            contactOpen = true;
-        }, 50); // 50ms delay
-    }
-
-    function closeContact() {
-        console.log('Closing contact');
-
-        if (contactCloseTimeout) clearTimeout(contactCloseTimeout);
-
-        contactSection.classList.remove('show');
-        contactSection.classList.add('hide');
-        contactOpen = false;
-
-        contactCloseTimeout = setTimeout(() => {
-            contactSection.style.display = 'none';
-            contactSection.className = 'content-section';
-            contactCloseTimeout = null;
-        }, 900);
-    }
-
-    // Link handlers
-    aboutLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        console.log('About clicked, open:', aboutOpen);
-
-        if (aboutOpen) {
-            closeAbout();
-        } else {
-            openAbout();
-        }
-    });
-
-    contactLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        console.log('Contact clicked, open:', contactOpen);
-
-        if (contactOpen) {
-            closeContact();
-        } else {
-            openContact();
-        }
-    });
-
-    // Section click to close - ONLY if section is actually open
-    aboutSection.addEventListener('click', function(e) {
-        if (e.target.id === 'emailLink-mobile' ||
-            e.target.id === 'copyBtn-mobile' ||
-            e.target.closest('#copyBtn-mobile') ||
-            e.target.closest('#emailLink-mobile')) {
-            return;
-        }
-
-        console.log('About section clicked, open:', aboutOpen);
-
-        // Only close if it's been open for at least 100ms
-        if (aboutOpen) {
-            closeAbout();
-        }
-    });
-
-    contactSection.addEventListener('click', function(e) {
-        if (e.target.id === 'emailLink-mobile' ||
-            e.target.id === 'copyBtn-mobile' ||
-            e.target.closest('#copyBtn-mobile') ||
-            e.target.closest('#emailLink-mobile')) {
-            return;
-        }
-
-        console.log('Contact section clicked, open:', contactOpen);
-
-        // Only close if it's been open for at least 100ms
-        if (contactOpen) {
-            closeContact();
-        }
-    });
-
-    // Copy email
-    const copyBtn = document.getElementById('copyBtn-mobile');
-    if (copyBtn) {
-        copyBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            const email = 'info@suitman.org';
-            navigator.clipboard.writeText(email).then(() => {
-                copyBtn.textContent = '✓';
-                setTimeout(() => copyBtn.textContent = '⧉', 2000);
-            });
-        });
-    }
-}
