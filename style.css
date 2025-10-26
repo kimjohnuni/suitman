@@ -120,31 +120,119 @@ body {
     display: block;
 }
 
-/* Slide Panels */
+/* Slide Panels - Tab integrated into panel */
 .slide-panel {
     position: fixed;
-     left: calc(30px - 40vw);
+    left: calc(30px - 40vw);
     top: 0;
     width: 40vw;
     height: 100vh;
-    background-color: white;
     z-index: 90;
     transition: left 0.8s cubic-bezier(0.77, 0, 0.175, 1);
-    box-shadow: none;
     overflow: visible;
+    pointer-events: none;
 }
 
 .slide-panel.open {
     left: 30px;
+    pointer-events: auto;
+}
+
+/* Panel background (white area) */
+.slide-panel::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    box-shadow: none;
+    transition: box-shadow 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.slide-panel.open::before {
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Panel Tab - part of the panel */
+.panel-tab {
+    position: absolute;
+    right: -30px;
+    top: 20%;
+    width: 30px;
+    background-color: white;
+    padding: 15px 8px;
+    cursor: pointer;
+    border-radius: 0 5px 5px 0;
+    transition: opacity 0.8s ease, padding-right 0.3s ease;
+    z-index: 91;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+}
+
+.panel-tab:hover {
+    padding-right: 12px;
+}
+
+.slide-panel.open .panel-tab:hover {
+    padding-right: 8px;
+}
+
+.contact-panel .panel-tab {
+    top: calc(20% + 95px);
+}
+
+/* Tab text styling */
+.panel-tab .tab-text {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 200;
+    font-size: 11px;
+    letter-spacing: -1px;
+    color: #000;
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    display: block;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.panel-tab .tab-close {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(0deg);
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    font-size: 10px;
+    font-weight: 200;
+    letter-spacing: -1px;
+}
+
+.panel-tab.active .tab-text {
+    opacity: 0;
+    transform: scale(0.5) rotate(90deg);
+}
+
+.panel-tab.active .tab-close {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(180deg);
+}
+
+/* Panel Content */
 .panel-content {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
     padding: 80px 70px 50px 40px;
     overflow-y: auto;
-    height: 100%;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    z-index: 92;
 }
 
 .panel-content::-webkit-scrollbar {
@@ -168,79 +256,15 @@ body {
     color: #333;
 }
 
-/* Tabs inside panels */
-.slide-panel .menu-tab-about,
-.slide-panel .menu-tab-contact {
-    position: absolute;
-    right: 1px;
-    transform: translateX(100%);
-    top: 20%;
-    background-color: white;
-    padding: 15px 8px;
-    cursor: pointer;
-    border-radius: 0 5px 5px 0;
-    transition: opacity 0.8s ease, padding-right 0.3s ease;
-    width: fit-content;
-    height: fit-content;
-    z-index: 101;
-}
-
-.slide-panel .menu-tab-about:hover,
-.slide-panel .menu-tab-contact:hover {
-    padding-right: 12px;
-}
-
-.slide-panel.open .menu-tab-about:hover,
-.slide-panel.open .menu-tab-contact:hover {
-    padding-right: 8px;
-}
-
-.slide-panel .menu-tab-contact {
-    top: calc(20% + 95px);
-}
-
-/* Tab text styling */
-.menu-tab-about span,
-.menu-tab-contact span {
-    font-family: 'Roboto', sans-serif;
-    font-weight: 200;
-    font-size: 10px;
-    letter-spacing: -1px;
+.panel-content a {
     color: #000;
-    writing-mode: vertical-rl;
-    text-orientation: upright;
-    display: block;
+    text-decoration: underline;
+    cursor: pointer;
+    transition: color 0.3s ease;
 }
 
-/* Animate ABOUT/CONTACT text to X */
-.menu-tab-about .tab-text,
-.menu-tab-contact .tab-text {
-    transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.menu-tab-about .tab-close,
-.menu-tab-contact .tab-close {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(0deg);
-    opacity: 0;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    font-size: 10px;
-    font-weight: 200;
-    letter-spacing: -1px;
-}
-
-.menu-tab-about.active .tab-text,
-.menu-tab-contact.active .tab-text {
-    opacity: 0;
-    transform: scale(0.5) rotate(90deg);
-}
-
-.menu-tab-about.active .tab-close,
-.menu-tab-contact.active .tab-close {
-    opacity: 1;
-    transform: translate(-50%, -50%) rotate(180deg);
+.panel-content a:hover {
+    color: #666;
 }
 
 /* Mobile Panels - Hidden by default */
@@ -345,8 +369,8 @@ body {
 .copyright {
     position: fixed;
     bottom: 7px;
-    left: 40px;
-    font-family: 'Roboto', Arial, sans-serif;
+    right: 40px;
+    font-family: 'Roboto', sans-serif;
     font-size: 9px;
     font-weight: 300;
     letter-spacing: 0.5px;
@@ -473,6 +497,7 @@ body {
 }
 
 /* Tablet - 768px */
+/* Tablet - 768px */
 @media (max-width: 768px) {
     .desktop-slider {
         display: none;
@@ -491,7 +516,8 @@ body {
         display: none;
     }
 
-    /* Instagram tab - completely override desktop styling to match mobile tabs */
+    /* Instagram tab - mobile styling */
+    /* Instagram tab - mobile styling */
     .instagram-tab {
         position: fixed;
         left: 5px;
@@ -501,7 +527,7 @@ body {
         background-color: white;
         padding: 10px;
         cursor: pointer;
-        border-radius: 5px;
+        border-radius: 0 5px 5px 0;  /* Changed from 5px to 0 5px 5px 0 */
         transition: padding-left 0.3s ease;
         width: 40px;
         height: 40px;
@@ -510,6 +536,7 @@ body {
         justify-content: center;
         z-index: 100;
     }
+
 
     .instagram-tab:hover {
         padding-left: 12px;
@@ -581,32 +608,117 @@ body {
         animation: slideInDown 1s cubic-bezier(0.77, 0, 0.175, 1) forwards;
     }
 
-    /* Mobile Panels - Position so tabs are visible */
+    /* Mobile Panels - EXACT SAME LOGIC AS DESKTOP */
     .mobile-panel {
         display: block;
         position: fixed;
-        left: calc(15px - 100vw + 45px);
+        left: calc(15px - 85vw);
         top: 0;
-        width: calc(100vw - 55px);
+        width: 85vw;
         height: 100vh;
-        background-color: white;
         z-index: 90;
         transition: left 0.8s cubic-bezier(0.77, 0, 0.175, 1);
-        box-shadow: none;
         overflow: visible;
+        pointer-events: none;
     }
 
     .mobile-panel.open {
         left: 15px;
+        pointer-events: auto;
+    }
+
+    /* Panel background (white area) */
+    .mobile-panel::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: white;
+        box-shadow: none;
+        transition: box-shadow 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+    }
+
+    .mobile-panel.open::before {
         box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
     }
 
+    /* Mobile Panel Tab */
+    .mobile-panel-tab {
+        position: absolute;
+        right: -35px;
+        top: 15%;
+        width: 40px;
+        background-color: white;
+        padding: 10px;
+        cursor: pointer;
+        border-radius: 0 5px 5px 0;
+        transition: opacity 0.8s ease, padding-right 0.3s ease;
+        z-index: 91;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        pointer-events: auto;
+        height: 40px;
+    }
+
+    .mobile-panel-tab:hover {
+        padding-right: 12px;
+    }
+
+    .mobile-panel.open .mobile-panel-tab:hover {
+        padding-right: 10px;
+    }
+
+    .mobile-contact-panel .mobile-panel-tab {
+        top: calc(15% + 55px);
+    }
+
+    /* SVG icon styling */
+    .mobile-panel-tab .tab-icon-svg {
+        width: 20px;
+        height: 20px;
+        display: block;
+        color: #000;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .mobile-panel-tab .tab-close {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(0deg);
+        opacity: 0;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        font-size: 16px;
+        font-weight: 200;
+        letter-spacing: -1px;
+    }
+
+    .mobile-panel-tab.active .tab-icon-svg {
+        opacity: 0;
+        transform: scale(0.5) rotate(90deg);
+    }
+
+    .mobile-panel-tab.active .tab-close {
+        opacity: 1;
+        transform: translate(-50%, -50%) rotate(180deg);
+    }
+
+    /* Panel Content */
     .mobile-panel .panel-content {
-        padding: 80px 30px 50px 30px;
-        overflow-y: auto;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
         height: 100%;
+        padding: 80px 50px 200px 20px;
+        overflow-y: auto;
         scrollbar-width: none;
         -ms-overflow-style: none;
+        z-index: 92;
     }
 
     .mobile-panel .panel-content::-webkit-scrollbar {
@@ -630,100 +742,20 @@ body {
         color: #333;
     }
 
-    /* Mobile tabs inside panels - with size animation and gap from RIGHT */
-    .mobile-panel .mobile-menu-tab-about,
-    .mobile-panel .mobile-menu-tab-contact {
-        position: absolute;
-        right: 0;
-        transform: translateX(100%);
-        top: 15%;
-        background-color: white;
-        padding: 10px;
+    .mobile-panel .panel-content a {
+        color: #000;
+        text-decoration: underline;
         cursor: pointer;
-        border-radius: 0 5px 5px 0;
-        transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                    padding-right 0.3s ease,
-                    width 0.8s cubic-bezier(0.77, 0, 0.175, 1),
-                    height 0.8s cubic-bezier(0.77, 0, 0.175, 1),
-                    margin-right 0.8s cubic-bezier(0.77, 0, 0.175, 1);
-        width: 40px;
-        height: 40px;
-        margin-right: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 101;
+        transition: color 0.3s ease;
     }
 
-    /* When panel opens - tab gets smaller and adds gap from RIGHT border */
-    .mobile-panel.open .mobile-menu-tab-about,
-    .mobile-panel.open .mobile-menu-tab-contact {
-        width: 32px;
-        height: 32px;
-        margin-right: 8px;
-    }
-
-    .mobile-panel .mobile-menu-tab-about:hover,
-    .mobile-panel .mobile-menu-tab-contact:hover {
-        padding-right: 12px;
-    }
-
-    .mobile-panel.open .mobile-menu-tab-about:hover,
-    .mobile-panel.open .mobile-menu-tab-contact:hover {
-        padding-right: 10px;
-    }
-
-    .mobile-panel .mobile-menu-tab-contact {
-        top: calc(14% + 55px);
-    }
-
-    /* SVG icon styling */
-    .mobile-menu-tab-about .tab-icon-svg,
-    .mobile-menu-tab-contact .tab-icon-svg {
-        width: 20px;
-        height: 20px;
-        display: block;
-        color: #000;
-        transition: opacity 0.3s ease, transform 0.3s ease, width 0.8s ease, height 0.8s ease;
-    }
-
-    /* Icon gets smaller when panel opens */
-    .mobile-panel.open .mobile-menu-tab-about .tab-icon-svg,
-    .mobile-panel.open .mobile-menu-tab-contact .tab-icon-svg {
-        width: 16px;
-        height: 16px;
-    }
-
-    /* Tab close X - smaller size */
-    .mobile-menu-tab-about .tab-close,
-    .mobile-menu-tab-contact .tab-close {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) rotate(0deg);
-        opacity: 0;
-        transition: opacity 0.3s ease, transform 0.3s ease;
-        font-size: 16px;
-        font-weight: 200;
-        color: #000;
-    }
-
-    .mobile-menu-tab-about.active .tab-icon-svg,
-    .mobile-menu-tab-contact.active .tab-icon-svg {
-        opacity: 0;
-        transform: scale(0.5) rotate(90deg);
-    }
-
-    .mobile-menu-tab-about.active .tab-close,
-    .mobile-menu-tab-contact.active .tab-close {
-        opacity: 1;
-        transform: translate(-50%, -50%) rotate(180deg);
+    .mobile-panel .panel-content a:hover {
+        color: #666;
     }
 }
 
 /* Mobile - 480px */
 @media (max-width: 480px) {
-    /* Even thinner borders for smaller screens */
     .top-white-bar,
     .bottom-white-bar {
         height: 10px;
@@ -744,15 +776,14 @@ body {
     }
 
     .mobile-panel {
-        left: calc(10px - 100vw + 45px);
-        width: calc(100vw - 50px);
+        left: calc(10px - 85vw);
+        width: 85vw;
     }
 
     .mobile-panel.open {
         left: 10px;
     }
 
-    /* Instagram tab adjusted for thinner borders - matching exact styling */
     .instagram-tab {
         left: 5px;
         top: 235px;
