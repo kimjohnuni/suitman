@@ -41,6 +41,7 @@
     </div>
 
     <!-- Contact Panel with integrated tab -->
+    <!-- Desktop Contact Panel -->
     <div class="slide-panel contact-panel" id="contactPanel">
         <div class="panel-tab" id="contactTab">
             <span class="tab-text">CONTACT</span>
@@ -48,8 +49,20 @@
         </div>
         <div class="panel-content">
             <h2>CONTACT</h2>
-            <p>Get in touch with us:</p>
-            <p>Email: info@suitman.org</p>
+            <div class="email-container">
+                <span class="email-label"><b>Email:</b></span>
+                <span class="email-text">info@suitman.org</span>
+                <button class="copy-button" onclick="copyEmail(event)">
+                    <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="8" y="8" width="13" height="13" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                        <path d="M6 16H5C3.89543 16 3 15.1046 3 14V5C3 3.89543 3.89543 3 5 3H14C15.1046 3 16 3.89543 16 4V6" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                    </svg>
+                    <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                        <circle class="check-circle" cx="12" cy="12" r="10" fill="black"/>
+                        <polyline points="16 9 10.5 14.5 8 12" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -86,7 +99,8 @@
         </div>
     </div>
 
-    <!-- Mobile Contact Panel with integrated tab -->
+    <!-- Mobile Contact Panel -->
+    <!-- Mobile Contact Panel -->
     <div class="mobile-panel mobile-contact-panel" id="mobileContactPanel">
         <div class="mobile-panel-tab" id="mobileContactTab">
             <svg class="tab-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -97,10 +111,23 @@
         </div>
         <div class="panel-content">
             <h2>CONTACT</h2>
-            <p>Get in touch with us:</p>
-            <p>Email: info@suitman.org</p>
+            <div class="email-container">
+                <span class="email-label"><b>Email:</b></span>
+                <span class="email-text">info@suitman.org</span>
+                <button class="copy-button" onclick="copyEmail(event)">
+                    <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="8" y="8" width="13" height="13" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                        <path d="M6 16H5C3.89543 16 3 15.1046 3 14V5C3 3.89543 3.89543 3 5 3H14C15.1046 3 16 3.89543 16 4V6" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                    </svg>
+                    <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                        <circle class="check-circle" cx="12" cy="12" r="10" fill="black"/>
+                        <polyline points="16 9 10.5 14.5 8 12" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
+
 
     <!-- Desktop Slider -->
     <div class="slider-container desktop-slider">

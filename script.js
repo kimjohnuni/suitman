@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Start auto-advance slides
     startAutoSlide();
 
-    // Desktop About/Contact Panel Toggle - WITH tab sliding animation
+    // Desktop About/Contact Panel Toggle
     const aboutTab = document.getElementById('aboutTab');
     const contactTab = document.getElementById('contactTab');
     const aboutPanel = document.getElementById('aboutPanel');
@@ -236,15 +236,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Mobile About/Contact Panel Toggle - WITH Instagram tab sliding
+    // Mobile About/Contact Panel Toggle - CORRECTED for right-positioned tabs
+    // Mobile About/Contact Panel Toggle - Controlled slide distance
     const mobileAboutTab = document.getElementById('mobileAboutTab');
     const mobileContactTab = document.getElementById('mobileContactTab');
     const mobileAboutPanel = document.getElementById('mobileAboutPanel');
     const mobileContactPanel = document.getElementById('mobileContactPanel');
     const instagramTab = document.querySelector('.instagram-tab');
 
-    if (isMobile && mobileAboutTab && mobileAboutPanel) {
-        mobileAboutTab.addEventListener('click', function() {
+    if (mobileAboutTab && mobileAboutPanel) {
+        mobileAboutTab.addEventListener('click', function(e) {
+            e.stopPropagation();
             const isOpen = mobileAboutPanel.classList.contains('open');
 
             // Toggle about panel
@@ -252,30 +254,29 @@ document.addEventListener('DOMContentLoaded', function() {
             mobileAboutTab.classList.toggle('active');
 
             if (!isOpen) {
-                // Opening ABOUT - slide CONTACT and INSTAGRAM tabs to the left
+                // Opening ABOUT - slide tabs to -70%
                 mobileContactPanel.classList.remove('open');
                 mobileContactTab.classList.remove('active');
                 mobileContactTab.style.transition = 'transform 0.3s ease';
-                mobileContactTab.style.transform = 'translateX(-100%)';
+                mobileContactTab.style.transform = 'translateX(-70%) scaleX(0.6)';  // Changed here
                 mobileContactTab.style.pointerEvents = 'none';
 
-                // Slide Instagram tab left
+                // Slide Instagram tab
                 if (instagramTab) {
                     instagramTab.style.transition = 'transform 0.3s ease';
-                    instagramTab.style.transform = 'translateX(-100%)';
+                    instagramTab.style.transform = 'translateX(-70%) scaleX(0.6)';  // Changed here
                     instagramTab.style.pointerEvents = 'none';
                 }
             } else {
-                // Closing ABOUT - slide CONTACT and INSTAGRAM tabs back
+                // Closing ABOUT - bring tabs back
                 setTimeout(function() {
                     mobileContactTab.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                    mobileContactTab.style.transform = 'translateX(0)';
+                    mobileContactTab.style.transform = 'translateX(0) scaleX(1)';
                     mobileContactTab.style.pointerEvents = 'auto';
 
-                    // Slide Instagram tab back
                     if (instagramTab) {
                         instagramTab.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                        instagramTab.style.transform = 'translateX(0)';
+                        instagramTab.style.transform = 'translateX(0) scaleX(1)';
                         instagramTab.style.pointerEvents = 'auto';
                     }
                 }, 400);
@@ -283,8 +284,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    if (isMobile && mobileContactTab && mobileContactPanel) {
-        mobileContactTab.addEventListener('click', function() {
+    if (mobileContactTab && mobileContactPanel) {
+        mobileContactTab.addEventListener('click', function(e) {
+            e.stopPropagation();
             const isOpen = mobileContactPanel.classList.contains('open');
 
             // Toggle contact panel
@@ -292,34 +294,66 @@ document.addEventListener('DOMContentLoaded', function() {
             mobileContactTab.classList.toggle('active');
 
             if (!isOpen) {
-                // Opening CONTACT - slide ABOUT and INSTAGRAM tabs to the left
+                // Opening CONTACT - slide tabs to -70%
                 mobileAboutPanel.classList.remove('open');
                 mobileAboutTab.classList.remove('active');
                 mobileAboutTab.style.transition = 'transform 0.3s ease';
-                mobileAboutTab.style.transform = 'translateX(-100%)';
+                mobileAboutTab.style.transform = 'translateX(-70%) scaleX(0.6)';  // Changed here
                 mobileAboutTab.style.pointerEvents = 'none';
 
-                // Slide Instagram tab left
+                // Slide Instagram tab
                 if (instagramTab) {
                     instagramTab.style.transition = 'transform 0.3s ease';
-                    instagramTab.style.transform = 'translateX(-100%)';
+                    instagramTab.style.transform = 'translateX(-70%) scaleX(0.6)';  // Changed here
                     instagramTab.style.pointerEvents = 'none';
                 }
             } else {
-                // Closing CONTACT - slide ABOUT and INSTAGRAM tabs back
+                // Closing CONTACT - bring tabs back
                 setTimeout(function() {
                     mobileAboutTab.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                    mobileAboutTab.style.transform = 'translateX(0)';
+                    mobileAboutTab.style.transform = 'translateX(0) scaleX(1)';
                     mobileAboutTab.style.pointerEvents = 'auto';
 
-                    // Slide Instagram tab back
                     if (instagramTab) {
                         instagramTab.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                        instagramTab.style.transform = 'translateX(0)';
+                        instagramTab.style.transform = 'translateX(0) scaleX(1)';
                         instagramTab.style.pointerEvents = 'auto';
                     }
                 }, 400);
             }
         });
     }
+
+    // Add touch event support for iOS
+    if (mobileAboutTab) {
+        document.body.addEventListener("touchstart", function(){});
+    }
+
 });
+
+// Copy email function
+function copyEmail(event) {
+    event.preventDefault();
+    const email = 'info@suitman.org';
+    navigator.clipboard.writeText(email).then(function() {
+        const button = event.target.closest('.copy-button');
+        const copyIcon = button.querySelector('.copy-icon');
+        const checkIcon = button.querySelector('.check-icon');
+
+        // Reset animation by removing and re-adding the element
+        const newCheckIcon = checkIcon.cloneNode(true);
+        checkIcon.parentNode.replaceChild(newCheckIcon, checkIcon);
+
+        // Hide copy icon, show checkmark with circle
+        copyIcon.style.display = 'none';
+        newCheckIcon.style.display = 'block';
+
+        // After 1.5 seconds, switch back
+        setTimeout(function() {
+            copyIcon.style.display = 'block';
+            newCheckIcon.style.display = 'none';
+        }, 1500);
+    }).catch(function(err) {
+        console.error('Failed to copy email: ', err);
+    });
+}

@@ -267,6 +267,77 @@ body {
     color: #666;
 }
 
+/* Email container styling */
+.email-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.email-label {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    color: #000;
+    flex-shrink: 0;
+}
+
+.email-text {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+    font-size: 13px;
+    color: #333;
+}
+
+.copy-button {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+}
+
+.copy-button:hover {
+    opacity: 0.7;
+}
+
+.copy-button.copied {
+    opacity: 1;
+}
+
+.copy-button .copy-icon,
+.copy-button .check-icon {
+    color: #000;
+    transition: opacity 0.3s ease;
+    display: block;
+}
+
+.copy-button:active {
+    transform: scale(0.95);
+}
+
+/* Fade animation for the black circle */
+.check-circle {
+    animation: fadeOut 1.5s ease-in-out forwards;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+
 /* Mobile Panels - Hidden by default */
 .mobile-panel {
     display: none;
@@ -505,6 +576,17 @@ body {
 
     .mobile-slider {
         display: block;
+        position: relative;
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    .mobile-slider .slider {
+        pointer-events: none;
+    }
+
+    .mobile-slider .slide {
+        pointer-events: none;
     }
 
     .nav-left,
@@ -517,26 +599,24 @@ body {
     }
 
     /* Instagram tab - mobile styling */
-    /* Instagram tab - mobile styling */
     .instagram-tab {
         position: fixed;
         left: 5px;
         right: auto;
-        top: 235px;
+        top: 270px;
         bottom: auto;
         background-color: white;
         padding: 10px;
         cursor: pointer;
-        border-radius: 0 5px 5px 0;  /* Changed from 5px to 0 5px 5px 0 */
+        border-radius: 0 5px 5px 0;
         transition: padding-left 0.3s ease;
         width: 40px;
         height: 40px;
         display: flex;
         align-items: center;
         justify-content: center;
-        z-index: 100;
+        z-index: 105;
     }
-
 
     .instagram-tab:hover {
         padding-left: 12px;
@@ -608,7 +688,7 @@ body {
         animation: slideInDown 1s cubic-bezier(0.77, 0, 0.175, 1) forwards;
     }
 
-    /* Mobile Panels - EXACT SAME LOGIC AS DESKTOP */
+    /* Mobile Panels */
     .mobile-panel {
         display: block;
         position: fixed;
@@ -655,7 +735,7 @@ body {
         cursor: pointer;
         border-radius: 0 5px 5px 0;
         transition: opacity 0.8s ease, padding-right 0.3s ease;
-        z-index: 91;
+        z-index: 105;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -728,7 +808,7 @@ body {
     .mobile-panel .panel-content h2 {
         font-family: 'Roboto', sans-serif;
         font-weight: 600;
-        font-size: 18px;
+        font-size: 16px;
         margin-bottom: 20px;
         color: #000;
     }
@@ -753,6 +833,10 @@ body {
         color: #666;
     }
 }
+
+
+/* Mobile - 480px */
+
 
 /* Mobile - 480px */
 @media (max-width: 480px) {
