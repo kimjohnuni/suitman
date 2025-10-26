@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="img/favicon/favicon-dark.ico" type="image/x-icon" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="img/favicon/favicon-light.ico" type="image/x-icon" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="img/favicon/favicon-dark.ico" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuiTMaN</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Fixed White Bars on all sides -->
+    <div class="top-white-bar"></div>
+    <div class="bottom-white-bar"></div>
+    <div class="left-white-bar"></div>
+    <div class="right-white-bar"></div>
+
+    <div class="logo-container">
+        <img src="img/logo/01. LOGO_WHITE.png" alt="Logo" class="logo white-logo">
+        <img src="img/logo/01. LOGO_BLK.png" alt="Logo" class="logo black-logo">
+    </div>
+
+    <!-- About Panel with integrated tab -->
+    <div class="slide-panel about-panel" id="aboutPanel">
+        <div class="panel-tab" id="aboutTab">
+            <span class="tab-text">ABOUT</span>
+            <span class="tab-close">✕</span>
+        </div>
+        <div class="panel-content">
+            <h2>ABOUT</h2>
+            <p>Young Kim was born in Seoul to Korean parents in the early 60's.</p>
+            <p>Until the age of twelve, Seoul was Young's home, and the only cultural reference. Following an emigration to the United States, Young then spent his adolescence and early adulthood in the United States where he came to identify as being Korean-American.</p>
+            <p>The successive experiences in Seoul and America left Young possessed by two distinctive cultures under one skin; to him, neither fitting very well. He considered himself to be as American. However, in the eyes of others, he was, by all appearances, "Asian".</p>
+            <p>After achieving a successful creative career in U.S. advertising industry, Young relocated to Tokyo in the 90's, taking on another challenge in his career path.</p>
+            <p>Ironically enough, in returning to Asia, Young found his alienation on a par with that of which he endured in America, only in reverse. His face fit, his persona did not. Dressing up as Suitman gave Young the strength to confront the feeling of socio-cultural isolation and empowered him to explore his true identity.</p>
+            <p>Suitman is Young's living art created through his experience of living the life as Suitman. Together, Suitman and Young Kim have traveled through six continents, over hundreds of destination, interacting with all walks of life, gathering inspiration for their work comprises photography, film, installation, performance and design object. Their work is insightful, highly engaging, surprising and always with a sense of humor. To view latest Suitman art work and exhibition, please visit <a href="https://www.manymanysuitman.com" target="_blank">'photography' & 'exhibition'</a> sessions at <a href="https://www.manymanysuitman.com" target="_blank">manymanysuitman.com</a>.</p>
+            <p>When putting his Reggae selector's hat on, Suitman is also known as Rasta Tiger. Visit at <a href="https://rastatigersden.com" target="_blank">rastatigersden.com</a></p>
+        </div>
+    </div>
+
+    <!-- Contact Panel with integrated tab -->
+    <!-- Desktop Contact Panel -->
+    <div class="slide-panel contact-panel" id="contactPanel">
+        <div class="panel-tab" id="contactTab">
+            <span class="tab-text">CONTACT</span>
+            <span class="tab-close">✕</span>
+        </div>
+        <div class="panel-content">
+            <h2>CONTACT</h2>
+            <div class="email-container">
+                <span class="email-label"><b>Email:</b></span>
+                <span class="email-text">info@suitman.org</span>
+                <button class="copy-button" onclick="copyEmail(event)">
+                    <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="8" y="8" width="13" height="13" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                        <path d="M6 16H5C3.89543 16 3 15.1046 3 14V5C3 3.89543 3.89543 3 5 3H14C15.1046 3 16 3.89543 16 4V6" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                    </svg>
+                    <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                        <circle class="check-circle" cx="12" cy="12" r="10" fill="black"/>
+                        <polyline points="16 9 10.5 14.5 8 12" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Instagram Tab - Bottom Right -->
+    <div class="instagram-tab">
+        <a href="https://www.instagram.com/suitman" target="_blank" rel="noopener noreferrer">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" stroke-width="1.5"/>
+                <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.5"/>
+                <circle cx="18" cy="6" r="1" fill="currentColor"/>
+            </svg>
+        </a>
+    </div>
+
+    <!-- Mobile About Panel with integrated tab -->
+    <div class="mobile-panel mobile-about-panel" id="mobileAboutPanel">
+        <div class="mobile-panel-tab" id="mobileAboutTab">
+            <svg class="tab-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M12 16V12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="12" cy="8.5" r="0.5" fill="currentColor" stroke="currentColor" stroke-width="0.5"/>
+            </svg>
+            <span class="tab-close">✕</span>
+        </div>
+        <div class="panel-content">
+            <h2>ABOUT</h2>
+            <p>Young Kim was born in Seoul to Korean parents in the early 60's.</p>
+            <p>Until the age of twelve, Seoul was Young's home, and the only cultural reference. Following an emigration to the United States, Young then spent his adolescence and early adulthood in the United States where he came to identify as being Korean-American.</p>
+            <p>The successive experiences in Seoul and America left Young possessed by two distinctive cultures under one skin; to him, neither fitting very well. He considered himself to be as American. However, in the eyes of others, he was, by all appearances, "Asian".</p>
+            <p>After achieving a successful creative career in U.S. advertising industry, Young relocated to Tokyo in the 90's, taking on another challenge in his career path.</p>
+            <p>Ironically enough, in returning to Asia, Young found his alienation on a par with that of which he endured in America, only in reverse. His face fit, his persona did not. Dressing up as Suitman gave Young the strength to confront the feeling of socio-cultural isolation and empowered him to explore his true identity.</p>
+            <p>Suitman is Young's living art created through his experience of living the life as Suitman. Together, Suitman and Young Kim have traveled through six continents, over hundreds of destination, interacting with all walks of life, gathering inspiration for their work comprises photography, film, installation, performance and design object. Their work is insightful, highly engaging, surprising and always with a sense of humor. To view latest Suitman art work and exhibition, please visit '<a href="https://www.manymanysuitman.com/photography" target="_blank">photography</a>' & '<a href="https://www.manymanysuitman.com/exhibition" target="_blank">exhibition</a>' sessions at <a href="https://www.manymanysuitman.com" target="_blank">www.manymanysuitman.com</a>.</p>
+            <p>When putting his Reggae selector's hat on, Suitman is also known as Rasta Tiger. Visit at <a href="https://rastatigersden.com" target="_blank">rastatigersden.com</a></p>
+        </div>
+    </div>
+
+    <!-- Mobile Contact Panel -->
+    <!-- Mobile Contact Panel -->
+    <div class="mobile-panel mobile-contact-panel" id="mobileContactPanel">
+        <div class="mobile-panel-tab" id="mobileContactTab">
+            <svg class="tab-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M3 7L12 13L21 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="tab-close">✕</span>
+        </div>
+        <div class="panel-content">
+            <h2>CONTACT</h2>
+            <div class="email-container">
+                <span class="email-label"><b>Email:</b></span>
+                <span class="email-text">info@suitman.org</span>
+                <button class="copy-button" onclick="copyEmail(event)">
+                    <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="8" y="8" width="13" height="13" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                        <path d="M6 16H5C3.89543 16 3 15.1046 3 14V5C3 3.89543 3.89543 3 5 3H14C15.1046 3 16 3.89543 16 4V6" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                    </svg>
+                    <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                        <circle class="check-circle" cx="12" cy="12" r="10" fill="black"/>
+                        <polyline points="16 9 10.5 14.5 8 12" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Desktop Slider -->
+    <div class="slider-container desktop-slider">
+        <div class="nav-left"></div>
+        <div class="nav-right"></div>
+        <div class="slider">
+            <div class="slide active">
+                <div class="image-wrapper">
+                    <img src="img/bg/horizontal/01. ICELAND.jpg" alt="Iceland">
+                </div>
+            </div>
+            <div class="slide">
+                <div class="image-wrapper">
+                    <img src="img/bg/horizontal/01. MYANMAR.jpg" alt="Myanmar">
+                </div>
+            </div>
+            <div class="slide">
+                <div class="image-wrapper">
+                    <img src="img/bg/horizontal/02. BRAZIL.jpg" alt="Brazil">
+                </div>
+            </div>
+            <div class="slide">
+                <div class="image-wrapper">
+                    <img src="img/bg/horizontal/02. INDIA.jpg" alt="India">
+                </div>
+            </div>
+            <div class="slide">
+                <div class="image-wrapper">
+                    <img src="img/bg/horizontal/03. ATHENS.jpg" alt="Athens">
+                </div>
+            </div>
+            <div class="slide">
+                <div class="image-wrapper">
+                    <img src="img/bg/horizontal/03. TIBET.jpg" alt="Tibet">
+                </div>
+            </div>
+            <div class="slide">
+                <div class="image-wrapper">
+                    <img src="img/bg/horizontal/04. MONGOLIA.jpg" alt="Mongolia">
+                </div>
+            </div>
+            <div class="slide">
+                <div class="image-wrapper">
+                    <img src="img/bg/horizontal/04. USA.jpg" alt="USA">
+                </div>
+            </div>
+            <div class="slide">
+                <div class="image-wrapper">
+                    <img src="img/bg/horizontal/05. NEW ZEALAND.jpg" alt="New Zealand">
+                </div>
+            </div>
+            <div class="slide">
+                <div class="image-wrapper">
+                    <img src="img/bg/horizontal/05. USA.jpg" alt="USA 2">
+                </div>
+            </div>
+            <div class="slide">
+                <div class="image-wrapper">
+                    <img src="img/bg/horizontal/06. EGYPT.jpg" alt="Egypt">
+                </div>
+            </div>
+            <div class="slide">
+                <div class="image-wrapper">
+                    <img src="img/bg/horizontal/06. USA_.jpg" alt="USA 3">
+                </div>
+            </div>
+            <div class="slide">
+                <div class="image-wrapper">
+                    <img src="img/bg/horizontal/07. BEIJING.jpg" alt="Beijing">
+                </div>
+            </div>
+            <div class="slide">
+                <div class="image-wrapper">
+                    <img src="img/bg/horizontal/07. JAPAN.jpg" alt="Japan">
+                </div>
+            </div>
+            <div class="slide">
+                <div class="image-wrapper">
+                    <img src="img/bg/horizontal/08. BUSAN.jpg" alt="Busan">
+                </div>
+            </div>
+            <div class="slide">
+                <div class="image-wrapper">
+                    <img src="img/bg/horizontal/08. EGYPT.jpg" alt="Egypt 2">
+                </div>
+            </div>
+            <div class="slide">
+                <div class="image-wrapper">
+                    <img src="img/bg/horizontal/09. FIGURES.jpg" alt="Figures">
+                </div>
+            </div>
+            <div class="slide">
+                <div class="image-wrapper">
+                    <img src="img/bg/horizontal/10. GREECE.jpg" alt="Greece">
+                </div>
+            </div>
+            <div class="slide">
+                <div class="image-wrapper">
+                    <img src="img/bg/horizontal/11. HK.jpg" alt="Hong Kong">
+                </div>
+            </div>
+        </div>
+
+        <svg style="position: absolute; width: 0; height: 0;">
+            <defs>
+                <filter id="motion-blur">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="30,0" />
+                </filter>
+            </defs>
+        </svg>
+    </div>
+
+    <!-- Mobile Slider -->
+    <div class="slider-container mobile-slider">
+        <div class="slider">
+            <div class="slide active">
+                <div class="image-wrapper">
+                    <img src="img/bg/vertical/01. ICELAND.jpg" alt="Iceland">
+                </div>
+            </div>
+            <div class="slide">
+                <div class="image-wrapper">
+                    <img src="img/bg/vertical/02. ABOUT_01.jpg" alt="About">
+                </div>
+            </div>
+            <div class="slide">
+                <div class="image-wrapper">
+                    <img src="img/bg/vertical/03. MONGOLIA.jpg" alt="Mongolia">
+                </div>
+            </div>
+            <div class="slide">
+                <div class="image-wrapper">
+                    <img src="img/bg/vertical/05. BAHARIYA.jpg" alt="Bahariya">
+                </div>
+            </div>
+            <div class="slide">
+                <div class="image-wrapper">
+                    <img src="img/bg/vertical/06. EGYPT.jpg" alt="Egypt">
+                </div>
+            </div>
+            <div class="slide">
+                <div class="image-wrapper">
+                    <img src="img/bg/vertical/07. ATHENS.jpg" alt="Athens">
+                </div>
+            </div>
+        </div>
+
+        <svg style="position: absolute; width: 0; height: 0;">
+            <defs>
+                <filter id="motion-blur-vertical">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="0,30" />
+                </filter>
+            </defs>
+        </svg>
+    </div>
+    <div class="copyright">COPYRIGHT © SUITMAN ENTERTAINMENT ALL RIGHTS RESERVED.</div>
+    <script src="script.js"></script>
+</body>
+</html>
