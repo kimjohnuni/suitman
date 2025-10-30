@@ -236,8 +236,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Mobile About/Contact Panel Toggle - CORRECTED for right-positioned tabs
-    // Mobile About/Contact Panel Toggle - Controlled slide distance
+    // Mobile About/Contact Panel Toggle
     const mobileAboutTab = document.getElementById('mobileAboutTab');
     const mobileContactTab = document.getElementById('mobileContactTab');
     const mobileAboutPanel = document.getElementById('mobileAboutPanel');
@@ -258,13 +257,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 mobileContactPanel.classList.remove('open');
                 mobileContactTab.classList.remove('active');
                 mobileContactTab.style.transition = 'transform 0.3s ease';
-                mobileContactTab.style.transform = 'translateX(-70%) scaleX(0.6)';  // Changed here
+                mobileContactTab.style.transform = 'translateX(-70%) scaleX(0.6)';
                 mobileContactTab.style.pointerEvents = 'none';
 
                 // Slide Instagram tab
                 if (instagramTab) {
                     instagramTab.style.transition = 'transform 0.3s ease';
-                    instagramTab.style.transform = 'translateX(-70%) scaleX(0.6)';  // Changed here
+                    instagramTab.style.transform = 'translateX(-70%) scaleX(0.6)';
                     instagramTab.style.pointerEvents = 'none';
                 }
             } else {
@@ -298,13 +297,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 mobileAboutPanel.classList.remove('open');
                 mobileAboutTab.classList.remove('active');
                 mobileAboutTab.style.transition = 'transform 0.3s ease';
-                mobileAboutTab.style.transform = 'translateX(-70%) scaleX(0.6)';  // Changed here
+                mobileAboutTab.style.transform = 'translateX(-70%) scaleX(0.6)';
                 mobileAboutTab.style.pointerEvents = 'none';
 
                 // Slide Instagram tab
                 if (instagramTab) {
                     instagramTab.style.transition = 'transform 0.3s ease';
-                    instagramTab.style.transform = 'translateX(-70%) scaleX(0.6)';  // Changed here
+                    instagramTab.style.transform = 'translateX(-70%) scaleX(0.6)';
                     instagramTab.style.pointerEvents = 'none';
                 }
             } else {
@@ -327,6 +326,172 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add touch event support for iOS
     if (mobileAboutTab) {
         document.body.addEventListener("touchstart", function(){});
+    }
+
+    // Form field animation - Desktop
+    const formFields = document.querySelectorAll('#contactForm .form-field');
+
+    formFields.forEach(field => {
+        const input = field.querySelector('input, textarea');
+
+        if (input) {
+            // Add animation on focus
+            input.addEventListener('focus', function() {
+                field.classList.add('has-content');
+            });
+
+            // Remove animation on blur only if field is empty
+            input.addEventListener('blur', function() {
+                if (this.value.trim() === '') {
+                    field.classList.remove('has-content');
+                }
+            });
+
+            // Check initial state on page load
+            if (input.value.trim() !== '') {
+                field.classList.add('has-content');
+            }
+        }
+    });
+
+    // Form field animation - Mobile
+    const mobileFormFields = document.querySelectorAll('#mobileContactForm .form-field');
+
+    mobileFormFields.forEach(field => {
+        const input = field.querySelector('input, textarea');
+
+        if (input) {
+            // Add animation on focus
+            input.addEventListener('focus', function() {
+                field.classList.add('has-content');
+            });
+
+            // Remove animation on blur only if field is empty
+            input.addEventListener('blur', function() {
+                if (this.value.trim() === '') {
+                    field.classList.remove('has-content');
+                }
+            });
+
+            // Check initial state on page load
+            if (input.value.trim() !== '') {
+                field.classList.add('has-content');
+            }
+        }
+    });
+
+    // Form submission - Desktop
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Get form values
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+
+            // Show success modal FIRST (instantly)
+            const modal = document.getElementById('successModal');
+            modal.classList.add('show');
+
+            // Fade out after 2 seconds, remove after 3 seconds
+            setTimeout(function() {
+                modal.classList.add('fade-out');
+            }, 2000);
+
+            setTimeout(function() {
+                modal.classList.remove('show', 'fade-out');
+            }, 3000);
+
+            // Close the contact panel
+            contactPanel.classList.remove('open');
+            contactTab.classList.remove('active');
+
+            // Slide ABOUT tab back immediately
+            aboutTab.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            aboutTab.style.transform = 'translateX(0)';
+            aboutTab.style.pointerEvents = 'auto';
+
+            // Reset form and remove animations
+            contactForm.reset();
+            formFields.forEach(field => {
+                field.classList.remove('has-content');
+            });
+
+            // Send email using EmailJS (in background)
+            emailjs.send('service_2t7fwpx', 'template_d3vrshc', {
+                from_name: name,
+                from_email: email,
+                message: message
+            })
+            .then(function(response) {
+                console.log('SUCCESS!', response.status, response.text);
+            }, function(error) {
+                console.log('FAILED...', error);
+                alert('Failed to send message. Please try again.');
+            });
+        });
+    }
+
+    // Form submission - Mobile
+    const mobileContactForm = document.getElementById('mobileContactForm');
+    if (mobileContactForm) {
+        mobileContactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Get form values
+            const name = document.getElementById('mobileName').value;
+            const email = document.getElementById('mobileEmail').value;
+            const message = document.getElementById('mobileMessage').value;
+
+            // Show success modal FIRST (instantly)
+            const modal = document.getElementById('successModal');
+            modal.classList.add('show');
+
+            // Fade out after 2 seconds, remove after 3 seconds
+            setTimeout(function() {
+                modal.classList.add('fade-out');
+            }, 2000);
+
+            setTimeout(function() {
+                modal.classList.remove('show', 'fade-out');
+            }, 3000);
+
+            // Close the contact panel
+            mobileContactPanel.classList.remove('open');
+            mobileContactTab.classList.remove('active');
+
+            // Slide tabs back immediately
+            mobileAboutTab.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            mobileAboutTab.style.transform = 'translateX(0) scaleX(1)';
+            mobileAboutTab.style.pointerEvents = 'auto';
+
+            if (instagramTab) {
+                instagramTab.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                instagramTab.style.transform = 'translateX(0) scaleX(1)';
+                instagramTab.style.pointerEvents = 'auto';
+            }
+
+            // Reset form and remove animations
+            mobileContactForm.reset();
+            mobileFormFields.forEach(field => {
+                field.classList.remove('has-content');
+            });
+
+            // Send email using EmailJS (in background)
+            emailjs.send('service_2t7fwpx', 'template_d3vrshc', {
+                from_name: name,
+                from_email: email,
+                message: message
+            })
+            .then(function(response) {
+                console.log('SUCCESS!', response.status, response.text);
+            }, function(error) {
+                console.log('FAILED...', error);
+                alert('Failed to send message. Please try again.');
+            });
+        });
     }
 
 });

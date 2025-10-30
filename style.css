@@ -273,6 +273,7 @@ body {
     align-items: center;
     gap: 8px;
     margin-top: 10px;
+    margin-bottom: 30px;
 }
 
 .email-label {
@@ -312,7 +313,6 @@ body {
     transform: scaleX(1);
     transform-origin: bottom left;
 }
-
 
 .copy-button {
     background-color: transparent;
@@ -360,6 +360,121 @@ body {
         opacity: 0;
     }
 }
+
+/* Contact Form Styling */
+/* Contact Form Styling */
+.contact-form {
+    margin-top: 30px;
+}
+
+.form-field {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.form-field input,
+.form-field textarea {
+    width: 100%;
+    padding: 10px 10px 10px 5px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+    font-size: 13px;
+    color: #333;
+    background: transparent;
+    border: none;
+    outline: none;
+    position: relative;
+    z-index: 2;
+}
+
+/* Bottom line for all fields - shortened to account for border radius */
+.form-field::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    bottom: 0;
+    width: calc(100% - 12px);
+    height: 0.75px;
+    background-color: #333;
+    z-index: 1;
+}
+
+.form-field textarea {
+    resize: none;
+    min-height: 80px;
+}
+
+.form-field input::placeholder,
+.form-field textarea::placeholder {
+    color: #999;
+    font-weight: 300;
+}
+
+/* Animated complete border - draws from bottom corners up and meets at top center */
+.form-field::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 0.75px solid #333;
+    border-radius: 6px;
+    pointer-events: none;
+    z-index: 1;
+    clip-path: polygon(
+        0% 100%, 0% 100%,
+        100% 100%, 100% 100%,
+        100% 100%, 100% 100%,
+        0% 100%, 0% 100%
+    );
+    transition: clip-path 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* When field is focused - lines travel up sides and meet at top center */
+.form-field.has-content::before {
+    clip-path: polygon(
+        0% 100%, 0% 0%,
+        50% 0%, 100% 0%,
+        100% 0%, 100% 100%,
+        0% 100%, 0% 100%
+    );
+}
+
+/* When field has content, add more left padding */
+.form-field.has-content input,
+.form-field.has-content textarea {
+    padding-left: 12px;
+    transition: padding-left 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* Submit Button */
+/* Submit Button */
+.submit-button {
+    background-color: transparent;
+    color: #000;
+    border: 0.75px solid #000;
+    padding: 10px 30px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin-top: 10px;
+    display: block;
+    margin-left: auto;
+}
+
+.submit-button:hover {
+    background-color: #000;
+    color: #fff;
+}
+
+.submit-button:active {
+    transform: translateY(0);
+}
+
 
 
 /* Mobile Panels - Hidden by default */
@@ -591,7 +706,50 @@ body {
     }
 }
 
-/* Tablet - 768px */
+
+/* Success Modal */
+/* Success Modal */
+.success-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 200;
+    opacity: 0;
+    visibility: hidden;
+    transition: none;
+    pointer-events: none;
+}
+
+
+.success-modal.show {
+    opacity: 1;
+    visibility: visible;
+    transition: none;
+}
+
+.success-modal.fade-out {
+    opacity: 0;
+    transition: opacity 1s ease;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 30px 50px;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.modal-content p {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    color: #000;
+    margin: 0;
+}
+
+
 /* Tablet - 768px */
 @media (max-width: 768px) {
     .desktop-slider {
@@ -857,10 +1015,6 @@ body {
         color: #666;
     }
 }
-
-
-/* Mobile - 480px */
-
 
 /* Mobile - 480px */
 @media (max-width: 480px) {
