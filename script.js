@@ -130,15 +130,24 @@ document.addEventListener('DOMContentLoaded', function() {
     // Desktop click navigation
     if (!isMobile && navLeft && navRight) {
         navLeft.addEventListener('click', function() {
+            // Don't navigate if a panel is open
+            if (aboutPanel.classList.contains('open') || contactPanel.classList.contains('open')) {
+                return;
+            }
             const prevIndex = (currentSlide - 1 + slides.length) % slides.length;
             goToSlide(prevIndex, 'backward');
         });
 
         navRight.addEventListener('click', function() {
+            // Don't navigate if a panel is open
+            if (aboutPanel.classList.contains('open') || contactPanel.classList.contains('open')) {
+                return;
+            }
             const nextIndex = (currentSlide + 1) % slides.length;
             goToSlide(nextIndex, 'forward');
         });
     }
+
 
     // Mobile touch swipe
     if (isMobile && mobileSlider) {
@@ -493,6 +502,75 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+    // Close panels when clicking outside - Desktop
+    document.addEventListener('click', function(e) {
+        // Check if click is outside both panels and tabs
+        const isClickInsideAbout = aboutPanel.contains(e.target) || aboutTab.contains(e.target);
+        const isClickInsideContact = contactPanel.contains(e.target) || contactTab.contains(e.target);
+
+        if (!isClickInsideAbout && !isClickInsideContact) {
+            // Close about panel if open
+            if (aboutPanel.classList.contains('open')) {
+                aboutPanel.classList.remove('open');
+                aboutTab.classList.remove('active');
+
+                // Slide CONTACT tab back
+                setTimeout(function() {
+                    contactTab.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                    contactTab.style.transform = 'translateX(0)';
+                    contactTab.style.pointerEvents = 'auto';
+                }, 400);
+            }
+
+            // Close contact panel if open
+            if (contactPanel.classList.contains('open')) {
+                contactPanel.classList.remove('open');
+                contactTab.classList.remove('active');
+
+                // Slide ABOUT tab back
+                setTimeout(function() {
+                    aboutTab.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                    aboutTab.style.transform = 'translateX(0)';
+                    aboutTab.style.pointerEvents = 'auto';
+                }, 400);
+            }
+        }
+    });
+
+    // Close panels when clicking outside - Mobile
+    document.addEventListener('click', function(e) {
+        // Check if click is outside both mobile panels and tabs
+        const isClickInsideMobileAbout = mobileAboutPanel && (mobileAboutPanel.contains(e.target) || mobileAboutTab.contains(e.target));
+        const isClickInsideMobileContact = mobileContactPanel && (mobileContactPanel.contains(e.target) || mobileContactTab.contains(e.target));
+
+        if (!isClickInsideMobileAbout && !isClickInsideMobileContact) {
+            // Close mobile about panel if open
+            if (mobileAboutPanel && mobileAboutPanel.classList.contains('open')) {
+                mobileAboutPanel.classList.remove('open');
+                mobileAboutTab.classList.remove('active');
+
+                // Bring tabs back
+                setTimeout(function() {
+                    mobileContactTab.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                    mobileContactTab.style.transform = 'translateX(0) scaleX(1)';
+                    mobileContactTab.style.pointerEvents = 'auto';
+                }, 400);
+            }
+
+            // Close mobile contact panel if open
+            if (mobileContactPanel && mobileContactPanel.classList.contains('open')) {
+                mobileContactPanel.classList.remove('open');
+                mobileContactTab.classList.remove('active');
+
+                // Bring tabs back
+                setTimeout(function() {
+                    mobileAboutTab.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                    mobileAboutTab.style.transform = 'translateX(0) scaleX(1)';
+                    mobileAboutTab.style.pointerEvents = 'auto';
+                }, 400);
+            }
+        }
+    });
 
 });
 

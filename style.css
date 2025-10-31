@@ -460,7 +460,7 @@ body {
     font-size: 13px;
     cursor: pointer;
     border-radius: 4px;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.8s ease, color 0.8s ease;
     margin-top: 10px;
     display: block;
     margin-left: auto;
@@ -747,6 +747,20 @@ body {
     font-size: 16px;
     color: #000;
     margin: 0;
+}
+
+/* Hide navigation cursors when panels are open */
+.slide-panel.open ~ .slider-container .nav-left,
+.slide-panel.open ~ .slider-container .nav-right {
+    cursor: default;
+    pointer-events: none;
+}
+
+/* For mobile panels */
+.mobile-panel.open ~ .slider-container .nav-left,
+.mobile-panel.open ~ .slider-container .nav-right {
+    cursor: default;
+    pointer-events: none;
 }
 
 
