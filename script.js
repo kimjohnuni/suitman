@@ -1,3 +1,8 @@
+
+
+
+
+
 document.addEventListener('DOMContentLoaded', function() {
     const desktopSlides = document.querySelectorAll('.desktop-slider .slide');
     const mobileSlides = document.querySelectorAll('.mobile-slider .slide');
