@@ -245,6 +245,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+
+    // Change cursor when panels open/close - Desktop
+    if (aboutTab && aboutPanel) {
+        const observer = new MutationObserver(function() {
+            if (aboutPanel.classList.contains('open') || contactPanel.classList.contains('open')) {
+                if (navLeft) navLeft.style.cursor = 'default';
+                if (navRight) navRight.style.cursor = 'default';
+            } else {
+                if (navLeft) navLeft.style.cursor = "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"48\" height=\"48\" viewBox=\"0 0 48 48\"><circle cx=\"24\" cy=\"24\" r=\"22\" fill=\"white\" stroke=\"black\" stroke-width=\"2\"/><path d=\"M 28 16 L 20 24 L 28 32\" fill=\"none\" stroke=\"black\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>') 24 24, w-resize";
+                if (navRight) navRight.style.cursor = "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"48\" height=\"48\" viewBox=\"0 0 48 48\"><circle cx=\"24\" cy=\"24\" r=\"22\" fill=\"white\" stroke=\"black\" stroke-width=\"2\"/><path d=\"M 20 16 L 28 24 L 20 32\" fill=\"none\" stroke=\"black\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>') 24 24, e-resize";
+            }
+        });
+
+        observer.observe(aboutPanel, { attributes: true, attributeFilter: ['class'] });
+        observer.observe(contactPanel, { attributes: true, attributeFilter: ['class'] });
+    }
+
     // Mobile About/Contact Panel Toggle
     const mobileAboutTab = document.getElementById('mobileAboutTab');
     const mobileContactTab = document.getElementById('mobileContactTab');

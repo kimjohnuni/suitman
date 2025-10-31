@@ -4,6 +4,16 @@
     box-sizing: border-box;
 }
 
+::selection {
+    background-color: #d3d3d3;
+    color: #000;
+}
+
+::-moz-selection {
+    background-color: #d3d3d3;
+    color: #000;
+}
+
 html, body {
     height: 100%;
     overflow-x: hidden;
@@ -266,6 +276,17 @@ body {
 .panel-content a:hover {
     color: #666;
 }
+
+/* Make contact panel content non-selectable */
+.contact-panel .panel-content,
+.mobile-contact-panel .panel-content {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+
 
 /* Email container styling */
 .email-container {
